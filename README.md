@@ -106,7 +106,6 @@ git --version
 
 ## Option 1: Install All Skills with the Skills CLI
 
-Replace `Sayem7456` with the repository owner.
 
 ```bash
 npx skills add Sayem7456/opencode-engineering-skills \
