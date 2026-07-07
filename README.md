@@ -106,10 +106,10 @@ git --version
 
 ## Option 1: Install All Skills with the Skills CLI
 
-Replace `YOUR_GITHUB_USERNAME` with the repository owner.
+Replace `Sayem7456` with the repository owner.
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+npx skills add Sayem7456/opencode-engineering-skills \
   --skill '*' \
   --agent opencode \
   --global
@@ -118,7 +118,7 @@ npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
 For non-interactive installation:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+npx skills add Sayem7456/opencode-engineering-skills \
   --skill '*' \
   --agent opencode \
   --global \
@@ -132,7 +132,7 @@ This installs the skills globally for OpenCode.
 Install only the skills relevant to your work:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+npx skills add Sayem7456/opencode-engineering-skills \
   --skill python-quality \
   --skill fastapi-backend \
   --skill sqlalchemy-postgres \
@@ -143,7 +143,7 @@ npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
 For Next.js development:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+npx skills add Sayem7456/opencode-engineering-skills \
   --skill nextjs-frontend \
   --skill ui-ux-design \
   --skill testing-and-debugging \
@@ -154,7 +154,7 @@ npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
 For reviews and release checks:
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+npx skills add Sayem7456/opencode-engineering-skills \
   --skill code-review \
   --skill security-review \
   --skill production-readiness \
@@ -165,14 +165,14 @@ npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills \
 ## Option 3: List Skills Before Installing
 
 ```bash
-npx skills add YOUR_GITHUB_USERNAME/opencode-engineering-skills --list
+npx skills add Sayem7456/opencode-engineering-skills --list
 ```
 
 ## Option 4: Install from the Full GitHub URL
 
 ```bash
 npx skills add \
-  https://github.com/YOUR_GITHUB_USERNAME/opencode-engineering-skills \
+  https://github.com/Sayem7456/opencode-engineering-skills \
   --agent opencode \
   --global
 ```
@@ -181,7 +181,7 @@ npx skills add \
 
 ```bash
 npx skills add \
-  https://github.com/YOUR_GITHUB_USERNAME/opencode-engineering-skills/tree/main/skills/fastapi-backend \
+  https://github.com/Sayem7456/opencode-engineering-skills/tree/main/skills/fastapi-backend \
   --agent opencode \
   --global
 ```
@@ -191,7 +191,7 @@ npx skills add \
 The Skills CLI installs the skills. To install both skills and the included OpenCode slash commands, clone the repository and run the installer:
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/opencode-engineering-skills.git
+git clone https://github.com/Sayem7456/opencode-engineering-skills.git
 cd opencode-engineering-skills
 
 chmod +x scripts/install-opencode.sh
@@ -212,7 +212,7 @@ Restart OpenCode or open a new session after installation.
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/opencode-engineering-skills.git
+git clone https://github.com/Sayem7456/opencode-engineering-skills.git
 cd opencode-engineering-skills
 ```
 
