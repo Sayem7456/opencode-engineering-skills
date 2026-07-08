@@ -10,7 +10,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 |-------|--------|---------|
 | `python-quality` | Available | Production-quality Python, typing, error handling |
 | `testing-and-debugging` | Available | Reproduction, root-cause analysis, regression tests |
-| `llm-app-security` | **Planned** | LLM-specific security: prompt injection, data leakage |
+| `llm-app-security` | Available | Review and harden LLM apps against prompt injection, data leakage, unsafe tool use and untrusted output |
 | `prompt-injection-defense` | **Planned** | Techniques for detecting and preventing prompt injection |
 | `rag-quality-review` | **Planned** | Evaluating retrieval quality, chunking, and context relevance |
 | `ai-evaluation` | **Planned** | Systematic evaluation of LLM outputs, metrics, and benchmarks |
@@ -19,7 +19,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
 | `context-engineering` | Available | Structured context for multi-step AI debugging |
 
-> **Note:** Five skills are marked as **Planned**. They do not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
+> **Note:** Four skills are marked as **Planned**. They do not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
 
 ## Recommended Commands
 
@@ -60,6 +60,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill token-saver \
   --skill context-engineering \
   --skill structured-output-reliability \
+  --skill llm-app-security \
   --agent opencode \
   --global
 ```
