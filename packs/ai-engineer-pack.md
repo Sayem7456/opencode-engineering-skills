@@ -12,7 +12,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `testing-and-debugging` | Available | Reproduction, root-cause analysis, regression tests |
 | `llm-app-security` | Available | Review and harden LLM apps against prompt injection, data leakage, unsafe tool use and untrusted output |
 | `prompt-injection-defense` | Available | Design, review and implement defenses against direct and indirect prompt injection |
-| `rag-quality-review` | **Planned** | Evaluating retrieval quality, chunking, and context relevance |
+| `rag-quality-review` | Available | Review and improve RAG systems for chunking, retrieval, grounding, citations, evaluation and safety |
 | `ai-evaluation` | **Planned** | Systematic evaluation of LLM outputs, metrics, and benchmarks |
 | `model-serving-production` | **Planned** | Deploying and operating LLM inference endpoints at scale |
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
@@ -62,6 +62,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill structured-output-reliability \
   --skill llm-app-security \
   --skill prompt-injection-defense \
+  --skill rag-quality-review \
   --agent opencode \
   --global
 ```
