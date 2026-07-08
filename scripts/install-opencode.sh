@@ -34,9 +34,12 @@ for skill_dir in "$SKILLS_SOURCE_DIR"/*; do
 
     target="$SKILLS_TARGET_DIR/$skill_name"
 
-    if [[ -L "$target" || -e "$target" ]]; then
-        echo "Replacing existing skill: $skill_name"
-        rm -rf "$target"
+    if [[ -L "$target" ]]; then
+        echo "Replacing existing symlink: $skill_name"
+        rm "$target"
+    elif [[ -e "$target" ]]; then
+        echo "Warning: $skill_name already exists and is not a symlink. Skipping."
+        continue
     fi
 
     ln -s "$skill_dir" "$target"
@@ -55,9 +58,12 @@ if [[ -d "$COMMANDS_SOURCE_DIR" ]]; then
         command_name="${command_filename%.md}"
         target="$COMMANDS_TARGET_DIR/$command_filename"
 
-        if [[ -L "$target" || -e "$target" ]]; then
-            echo "Replacing existing command: /$command_name"
-            rm -f "$target"
+        if [[ -L "$target" ]]; then
+            echo "Replacing existing symlink: /$command_name"
+            rm "$target"
+        elif [[ -e "$target" ]]; then
+            echo "Warning: /$command_name already exists and is not a symlink. Skipping."
+            continue
         fi
 
         ln -s "$command_file" "$target"

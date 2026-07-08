@@ -48,6 +48,9 @@ RECOMMENDED_SKILLS = {
     "security-review",
     "code-review",
     "production-readiness",
+    "token-saver",
+    "context-engineering",
+    "repository-navigation",
 }
 
 RECOMMENDED_COMMANDS = {
@@ -56,6 +59,11 @@ RECOMMENDED_COMMANDS = {
     "debug",
     "implement",
     "refactor",
+    "compress-context",
+    "context-audit",
+    "handoff-summary",
+    "plan",
+    "safe-apply",
 }
 
 

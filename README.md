@@ -20,6 +20,24 @@ These skills provide structured workflows and engineering standards for:
 
 The package helps OpenCode produce more consistent, maintainable, secure, and production-aware results across backend and frontend projects.
 
+## Token Saving and Context Compression
+
+This release introduces skills and commands focused on reducing token waste during OpenCode sessions. These are guidance skills: they instruct the agent on efficient reading, summarization, and context handoff. They do not automatically compress context or inject tooling — they change how the agent uses the tools it already has.
+
+The three new skills work together:
+
+* **`token-saver`** — teaches selective file reading, lazy context loading, compact reporting, and avoiding unnecessary output.
+* **`context-engineering`** — builds and preserves a structured context model across complex multi-step tasks, with compression and handoff guidance.
+* **`repository-navigation`** — explores unfamiliar repositories efficiently: build a repo map, find relevant files, trace callers, skip generated files.
+
+The five new slash commands invoke these skills directly:
+
+* `/compress-context` — produce a compressed working summary.
+* `/context-audit` — audit the current session for wasted context.
+* `/handoff-summary` — prepare a handoff for a new session.
+* `/plan` — create a compact implementation plan before editing.
+* `/safe-apply` — apply a planned change with verification checks.
+
 ## Available Skills
 
 | Skill                   | Purpose                                                                                                            |
@@ -33,16 +51,24 @@ The package helps OpenCode produce more consistent, maintainable, secure, and pr
 | `security-review`       | Authentication, authorization, input handling, secrets, injection, uploads, SSRF, and security risks               |
 | `code-review`           | Evidence-based reviews focused on correctness, regressions, security, data integrity, and maintainability          |
 | `production-readiness`  | Deployment safety, configuration, migrations, observability, health checks, rollback, and reliability              |
+| `token-saver`           | Selective file reading, lazy context loading, compact reporting, and avoiding unnecessary output                   |
+| `context-engineering`   | Build, compress, and reuse task context across sessions without losing decisions or verification state             |
+| `repository-navigation` | Efficient repository exploration, repo map building, caller tracing, and skipping generated files                  |
 
 ## Available Commands
 
 | Command      | Purpose                                                     |
 | ------------ | ----------------------------------------------------------- |
-| `/review`    | Review selected code without modifying it                   |
-| `/fix`       | Fix a confirmed defect and add regression coverage          |
-| `/debug`     | Investigate a bug and identify its root cause               |
-| `/implement` | Implement a new feature using existing project conventions  |
-| `/refactor`  | Refactor existing code while preserving observable behavior |
+| `/review`            | Review selected code without modifying it                                      |
+| `/fix`               | Fix a confirmed defect and add regression coverage                             |
+| `/debug`             | Investigate a bug and identify its root cause                                  |
+| `/implement`         | Implement a new feature using existing project conventions                     |
+| `/refactor`          | Refactor existing code while preserving observable behavior                    |
+| `/compress-context`  | Compress the current session context into a concise working summary            |
+| `/context-audit`     | Audit the current session for wasted context and missing information           |
+| `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              |
+| `/plan`              | Create a compact implementation plan before editing code                       |
+| `/safe-apply`        | Apply a planned change safely with diff inspection and verification            |
 
 ## Repository Structure
 
@@ -68,20 +94,34 @@ opencode-engineering-skills/
 │   │   └── SKILL.md
 │   ├── code-review/
 │   │   └── SKILL.md
-│   └── production-readiness/
+│   ├── production-readiness/
+│   │   └── SKILL.md
+│   ├── token-saver/
+│   │   └── SKILL.md
+│   ├── context-engineering/
+│   │   └── SKILL.md
+│   └── repository-navigation/
 │       └── SKILL.md
 ├── commands/
 │   ├── review.md
 │   ├── fix.md
 │   ├── debug.md
 │   ├── implement.md
-│   └── refactor.md
+│   ├── refactor.md
+│   ├── compress-context.md
+│   ├── context-audit.md
+│   ├── handoff-summary.md
+│   ├── plan.md
+│   └── safe-apply.md
 ├── scripts/
 │   ├── install-opencode.sh
 │   ├── uninstall-opencode.sh
 │   └── validate-skills.sh
-└── tests/
-    └── validate_skills.py
+├── tests/
+│   └── validate_skills.py
+└── docs/
+    ├── token-saving-guide.md
+    └── advanced-roadmap.md
 ```
 
 # Installation
@@ -187,7 +227,9 @@ npx skills add \
 
 ## Install Skills and Slash Commands
 
-The Skills CLI installs the skills. To install both skills and the included OpenCode slash commands, clone the repository and run the installer:
+The Skills CLI installs skills only (to `~/.agents/skills/`). It does not install slash commands.
+
+To install both skills and the included OpenCode slash commands, clone the repository and run the installer:
 
 ```bash
 git clone https://github.com/Sayem7456/opencode-engineering-skills.git
@@ -197,12 +239,22 @@ chmod +x scripts/install-opencode.sh
 ./scripts/install-opencode.sh
 ```
 
-The installer places or links content into:
+The installer symlinks content into:
 
 ```text
 ~/.config/opencode/skills/
 ~/.config/opencode/commands/
 ```
+
+It installs all skills and all command files from this repository.
+
+**Summary:**
+
+| What you want                    | Command                                                           |
+| -------------------------------- | ----------------------------------------------------------------- |
+| Skills only                      | `npx skills add Sayem7456/opencode-engineering-skills --skill '*'` |
+| Skills + slash commands          | `scripts/install-opencode.sh`                                     |
+| Selected skills only             | `npx skills add ... --skill token-saver --skill context-engineering` |
 
 Restart OpenCode or open a new session after installation.
 
@@ -320,13 +372,23 @@ If the installer copies files rather than creating symbolic links, run it again:
 
 # Uninstallation
 
-## Remove an Individual Skill
+## Remove Skills Installed with npx skills
 
 ```bash
-npx skills remove fastapi-backend
+npx skills remove token-saver
+npx skills remove context-engineering
+npx skills remove repository-navigation
 ```
 
-## Remove Skills Installed by This Repository
+List installed skills first:
+
+```bash
+npx skills list --global
+```
+
+The `npx skills remove` command only removes skills installed by `npx skills add`. It does not touch slash commands or skills installed by the shell installer.
+
+## Remove Skills and Commands Installed by the Shell Installer
 
 From the cloned repository:
 
@@ -335,22 +397,30 @@ chmod +x scripts/uninstall-opencode.sh
 ./scripts/uninstall-opencode.sh
 ```
 
-To manually remove selected skills:
+This removes only symlinks that were created from this repository. It will not delete skills installed by `npx skills add` or any other non-symlink files.
+
+**Summary:**
+
+| Installed via                   | Remove via                            |
+| ------------------------------- | ------------------------------------- |
+| `npx skills add`                | `npx skills remove <name>`            |
+| `scripts/install-opencode.sh`   | `scripts/uninstall-opencode.sh`       |
+| Manual copy                     | Manual `rm -rf`                       |
+
+To manually remove selected skills or commands installed by the shell installer:
 
 ```bash
-rm -rf ~/.config/opencode/skills/python-quality
-rm -rf ~/.config/opencode/skills/fastapi-backend
-rm -rf ~/.config/opencode/skills/sqlalchemy-postgres
+rm -rf ~/.config/opencode/skills/token-saver
+rm -rf ~/.config/opencode/skills/context-engineering
+rm -rf ~/.config/opencode/skills/repository-navigation
 ```
 
-Remove the included commands manually:
-
 ```bash
-rm -f ~/.config/opencode/commands/review.md
-rm -f ~/.config/opencode/commands/fix.md
-rm -f ~/.config/opencode/commands/debug.md
-rm -f ~/.config/opencode/commands/implement.md
-rm -f ~/.config/opencode/commands/refactor.md
+rm -f ~/.config/opencode/commands/compress-context.md
+rm -f ~/.config/opencode/commands/context-audit.md
+rm -f ~/.config/opencode/commands/handoff-summary.md
+rm -f ~/.config/opencode/commands/plan.md
+rm -f ~/.config/opencode/commands/safe-apply.md
 ```
 
 # How Skills Work
@@ -388,6 +458,14 @@ For a deployment assessment:
 ```text
 production-readiness
 security-review
+```
+
+For token-sensitive work in a large repository:
+
+```text
+token-saver
+context-engineering
+repository-navigation
 ```
 
 You can explicitly name skills in your prompt when you want deterministic selection.
@@ -487,7 +565,21 @@ It also considers:
 * capacity
 * failure handling
 
-## 8. Reusable Across Projects
+## 8. Token Efficiency
+
+The `token-saver`, `context-engineering`, and `repository-navigation` skills reduce token waste by:
+
+* reading only relevant sections of files instead of entire files
+* using grep and glob before reading
+* avoiding full-file dumps in responses
+* maintaining a compact context model instead of repeating information
+* summarizing logs instead of reproducing them
+* skipping generated and transient files
+* compressing context for handoff between sessions
+
+These are behavioral improvements, not automated tooling. The agent still reads what it needs for correctness — it simply avoids reading and repeating what it does not need.
+
+## 9. Reusable Across Projects
 
 The global installation makes the same skills available across multiple repositories without copying instructions into each project.
 
@@ -506,6 +598,9 @@ Project-specific rules can still be defined separately in the project’s own `A
 | `security-review`       | Security checks depend heavily on the prompt                                                                       | Authentication, authorization, secrets, injection, uploads, SSRF, tenant isolation, and unsafe data handling are reviewed systematically |
 | `code-review`           | Reviews may focus on formatting, naming, or subjective preferences                                                 | Findings focus on realistic defects, impact, severity, minimal fixes, and regression coverage                                            |
 | `production-readiness`  | Passing tests may be treated as sufficient for deployment                                                          | Configuration, migrations, health checks, monitoring, failure recovery, capacity, and rollback are also assessed                         |
+| `token-saver`           | The agent reads entire files, outputs full content, and repeats context across turns                               | Selective reads, compact output, lazy loading, and summarized context preserve tokens without losing information                          |
+| `context-engineering`   | Context degrades across long sessions; decisions are re-derived and handoffs lose information                      | Structured context model preserves goal, constraints, decisions, and verification state across complex multi-step tasks                  |
+| `repository-navigation` | The agent reads many irrelevant files or guesses file locations                                                    | A compact repo map guides exploration; grep/glob are used before reading; generated files are skipped                                    |
 
 # Advantages
 
@@ -539,11 +634,13 @@ Generated changes still require verification and human review.
 
 ## 2. Large Skills Consume Context
 
-When a detailed skill is loaded, it uses part of the model’s context window.
+When a detailed skill is loaded, it uses part of the model's context window.
 
 Avoid activating every skill for every task.
 
 Prefer relevant combinations.
+
+The `token-saver` and `context-engineering` skills help mitigate this by teaching the agent to read selectively, summarize aggressively, and avoid redundant output — but loading every skill still consumes context. Use them deliberately.
 
 ## 3. Overlapping Instructions
 
@@ -656,6 +753,58 @@ relevant stack-specific skill
 production-readiness
 security-review
 testing-and-debugging
+```
+
+## Large Bug Investigation (Token-Aware)
+
+```text
+token-saver
+context-engineering
+repository-navigation
+testing-and-debugging
+relevant stack-specific skill
+```
+
+## Large Refactor (Token-Aware)
+
+```text
+token-saver
+context-engineering
+repository-navigation
+code-review
+testing-and-debugging
+relevant stack-specific skill
+```
+
+## SQLAlchemy Production Issue (Token-Aware)
+
+```text
+token-saver
+context-engineering
+sqlalchemy-postgres
+fastapi-backend
+testing-and-debugging
+```
+
+## Next.js Dashboard Redesign (Token-Aware)
+
+```text
+token-saver
+context-engineering
+repository-navigation
+nextjs-frontend
+ui-ux-design
+testing-and-debugging
+```
+
+## Pre-Deployment Review with Context Audit
+
+```text
+production-readiness
+security-review
+testing-and-debugging
+token-saver
+context-engineering
 ```
 
 # Example Prompts
@@ -1067,6 +1216,88 @@ Separate release blockers from recommended improvements.
 Do not deploy or run production migrations automatically.
 ```
 
+## Compress Session Context
+
+```text
+Compress the current context using token-saver and context-engineering.
+
+Preserve:
+- task goal and constraints
+- exact errors and file paths
+- files changed and inspected
+- commands run and exit status
+- decisions made
+- verification status
+- remaining risks
+
+Remove:
+- irrelevant exploration
+- repeated log patterns
+- redundant explanations
+
+Return a compressed summary.
+```
+
+## Audit Context Waste
+
+```text
+Audit the current session for context waste using token-saver and context-engineering.
+
+Identify:
+- irrelevant files read
+- oversized logs or full-file dumps
+- repeated outputs
+- stale assumptions
+- missing critical context
+
+Return waste items with estimated impact and next minimal reads.
+```
+
+## Create Handoff Summary
+
+```text
+Create a handoff summary using context-engineering for continuing in a new session.
+
+Include:
+- goal and current state
+- files changed and important facts
+- commands run and test results
+- next steps and warnings
+
+Do not assume prior knowledge.
+```
+
+## Plan Before Implementation
+
+```text
+Create a compact implementation plan using repository-navigation and the relevant stack skills.
+
+Include:
+- scope
+- files likely affected
+- risks
+- tests to add or update
+- validation commands
+- rollback considerations
+
+Do not start editing until the plan is approved.
+```
+
+## Safe Apply After a Plan
+
+```text
+Apply the planned change safely using testing-and-debugging.
+
+Requirements:
+- inspect the diff first
+- make minimal changes
+- add or update tests
+- run focused verification
+- report results
+
+If verification fails, stop and report without applying speculative fixes.
+```
+
 # Slash Command Examples
 
 ## Review Code
@@ -1097,6 +1328,36 @@ Do not deploy or run production migrations automatically.
 
 ```text
 /refactor Refactor the assignment generation routes so business logic is moved into the service layer without changing the API contract.
+```
+
+## Compress Context
+
+```text
+/compress-context I am investigating why the user creation endpoint fails under load. I have read the route, service, model, and test files. Compress the session into a working summary.
+```
+
+## Audit Context
+
+```text
+/context-audit I have been debugging this SQLAlchemy transaction issue for several turns. Check whether I am wasting context on irrelevant files or missing critical information.
+```
+
+## Create Handoff Summary
+
+```text
+/handoff-summary I need to hand off this FastAPI migration work to a new session. I have updated the User model and created the migration but have not run the tests yet.
+```
+
+## Plan Before Implementing
+
+```text
+/plan Add a paginated teacher dashboard endpoint with branch-level access control.
+```
+
+## Safe Apply After Plan
+
+```text
+/safe-apply Apply the changes from the approved plan for the paginated teacher dashboard endpoint.
 ```
 
 # Best Practices

@@ -2,7 +2,7 @@
 
 name: ui-ux-design
 description: Design, review and improve high-quality responsive user interfaces and user experiences for Next.js, React, TypeScript and modern web applications.
-license: MIT 
+license: MIT
 compatibility: opencode
 metadata:
   category: design
