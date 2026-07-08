@@ -15,12 +15,10 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `rag-quality-review` | Available | Review and improve RAG systems for chunking, retrieval, grounding, citations, evaluation and safety |
 | `ai-evaluation` | Available | Design and review evaluation workflows for LLM, RAG and AI systems |
 | `ai-cost-optimization` | Available | Optimize LLM and AI application cost through caching, routing, batching and budgets |
-| `model-serving-production` | **Planned** | Deploying and operating LLM inference endpoints at scale |
+| `model-serving-production` | Available | Design, review and harden production AI model-serving systems |
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
 | `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
 | `context-engineering` | Available | Structured context for multi-step AI debugging |
-
-> **Note:** One skill is marked as **Planned**. It does not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
 
 ## Recommended Commands
 
@@ -66,6 +64,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill rag-quality-review \
   --skill ai-evaluation \
   --skill ai-cost-optimization \
+  --skill model-serving-production \
   --agent opencode \
   --global
 ```

@@ -6,7 +6,7 @@ REPO_SOURCE="Sayem7456/opencode-engineering-skills"
 AGENT="opencode"
 INSTALL_SCOPE="--global"
 
-PLANNED_SKILLS="llm-app-security model-serving-production"
+PLANNED_SKILLS=""
 
 # --------------------------------------------------
 # Usage
@@ -53,7 +53,7 @@ resolve_pack() {
             echo "production-readiness security-review sqlalchemy-postgres testing-and-debugging token-saver context-engineering"
             ;;
         ai-engineer)
-            echo "python-quality testing-and-debugging token-saver context-engineering structured-output-reliability llm-app-security prompt-injection-defense rag-quality-review ai-evaluation ai-cost-optimization"
+            echo "python-quality testing-and-debugging token-saver context-engineering structured-output-reliability llm-app-security prompt-injection-defense rag-quality-review ai-evaluation ai-cost-optimization model-serving-production"
             ;;
         fullstack)
             echo "python-quality fastapi-backend sqlalchemy-postgres nextjs-frontend ui-ux-design testing-and-debugging security-review code-review production-readiness token-saver context-engineering repository-navigation"
