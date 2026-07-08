@@ -70,6 +70,60 @@ The five new slash commands invoke these skills directly:
 | `/plan`              | Create a compact implementation plan before editing code                       |
 | `/safe-apply`        | Apply a planned change safely with diff inspection and verification            |
 
+## Skill Packs
+
+Skill packs are curated groups of skills organized by role and workflow. They are documentation recommendations — not a separate installer or CLI feature. Use them as a reference when selecting skills for a task or setting up a new development environment.
+
+| Pack | Role | Skills | Best For |
+|------|------|--------|----------|
+| `backend-pack` | Backend developer | python-quality, fastapi-backend, sqlalchemy-postgres, testing-and-debugging, security-review | FastAPI APIs, database work, backend services |
+| `frontend-pack` | Frontend developer | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review | Next.js pages, components, UI |
+| `review-pack` | Reviewer | code-review, security-review, testing-and-debugging, production-readiness | PR review, security audit |
+| `production-pack` | DevOps / platform | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering | Deployment assessment, incident investigation |
+| `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, + 5 planned skills | LLM apps, RAG pipelines, model serving |
+| `fullstack-pack` | Full-stack developer | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation | End-to-end features, cross-stack debugging |
+
+### Installation
+
+Install a pack using the pack installer:
+
+```bash
+# Install the backend pack
+./scripts/install-pack.sh backend
+
+# Install non-interactively
+./scripts/install-pack.sh fullstack --yes
+```
+
+Or install the individual skills directly:
+
+```bash
+npx skills add Sayem7456/opencode-engineering-skills \
+  --skill python-quality \
+  --skill fastapi-backend \
+  --skill sqlalchemy-postgres \
+  --skill testing-and-debugging \
+  --skill security-review \
+  --agent opencode \
+  --global
+```
+
+Each pack file in `packs/` includes its own installation command.
+
+### AI Engineer Pack — Planned Skills
+
+The `ai-engineer-pack` references five skills that do not yet exist in this repository:
+
+- `llm-app-security`
+- `prompt-injection-defense`
+- `rag-quality-review`
+- `ai-evaluation`
+- `model-serving-production`
+
+These are marked as **Planned** in the pack file. They will be added in future releases. The pack is still useful today with the four available skills (`python-quality`, `testing-and-debugging`, `token-saver`, `context-engineering`).
+
+All pack files are located in the `packs/` directory at the repository root.
+
 ## Repository Structure
 
 ```text
@@ -120,8 +174,16 @@ opencode-engineering-skills/
 │   └── safe-apply.md
 ├── scripts/
 │   ├── install-opencode.sh
+│   ├── install-pack.sh
 │   ├── uninstall-opencode.sh
 │   └── validate-skills.sh
+├── packs/
+│   ├── backend-pack.md
+│   ├── frontend-pack.md
+│   ├── review-pack.md
+│   ├── production-pack.md
+│   ├── ai-engineer-pack.md
+│   └── fullstack-pack.md
 ├── tests/
 │   └── validate_skills.py
 └── docs/
@@ -258,10 +320,43 @@ It installs all skills and all command files from this repository.
 | What you want                    | Command                                                           |
 | -------------------------------- | ----------------------------------------------------------------- |
 | Skills only                      | `npx skills add Sayem7456/opencode-engineering-skills --skill '*'` |
+| Skills by role pack              | `scripts/install-pack.sh <pack-name>`                             |
 | Skills + slash commands          | `scripts/install-opencode.sh`                                     |
 | Selected skills only             | `npx skills add ... --skill token-saver --skill context-engineering` |
 
 Restart OpenCode or open a new session after installation.
+
+## Install by Pack
+
+Install a curated skill pack for your role using `scripts/install-pack.sh`:
+
+```bash
+# Install the backend pack
+./scripts/install-pack.sh backend
+
+# Install the fullstack pack non-interactively
+./scripts/install-pack.sh fullstack --yes
+```
+
+This runs `npx skills add` with all skills in the selected pack. It installs skills only — slash commands still require a separate step:
+
+```bash
+# After installing skills, also install commands
+./scripts/install-opencode.sh
+```
+
+Available packs and their included skills:
+
+| Pack | Skills |
+|------|--------|
+| `backend` | python-quality, fastapi-backend, sqlalchemy-postgres, testing-and-debugging, security-review |
+| `frontend` | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review |
+| `review` | code-review, security-review, testing-and-debugging, production-readiness |
+| `production` | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering |
+| `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering (planned skills excluded — see packs/ai-engineer-pack.md) |
+| `fullstack` | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation |
+
+Pack files in `packs/` contain detailed guidance for each pack including example prompts, best use cases, and when not to use.
 
 ## Manual Installation
 

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -22,6 +23,7 @@ except ImportError as exc:
 ROOT_DIR = Path(__file__).resolve().parents[1]
 SKILLS_DIR = ROOT_DIR / "skills"
 COMMANDS_DIR = ROOT_DIR / "commands"
+PACKS_DIR = ROOT_DIR / "packs"
 
 VALID_NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
@@ -110,26 +112,37 @@ def extract_frontmatter(path: Path) -> tuple[dict[str, Any] | None, str]:
 README_PATH = ROOT_DIR / "README.md"
 
 
-def _parse_readme_table(pattern: re.Pattern[str]) -> set[str]:
-    """Extract names from a Markdown table in README.md matching the given regex."""
+def _readme_section(heading: str) -> str:
+    """Return the text between the given ##-heading and the next ##-heading."""
     if not README_PATH.is_file():
-        return set()
+        return ""
     try:
         content = README_PATH.read_text(encoding="utf-8")
     except OSError:
-        return set()
-    return set(pattern.findall(content))
+        return ""
+    lines = content.splitlines()
+    start = -1
+    for i, line in enumerate(lines):
+        if line.strip() == f"## {heading}":
+            start = i + 1
+            break
+    if start < 0:
+        return ""
+    for i in range(start, len(lines)):
+        if lines[i].startswith("## ") and i > start:
+            return "\n".join(lines[start:i])
+    return "\n".join(lines[start:])
 
 
 def _validate_readme_skill_table() -> list[ValidationIssue]:
-    """Check README skills table matches skills on disk."""
+    """Check README Available Skills table matches skills on disk."""
     issues: list[ValidationIssue] = []
-    readme_skills = _parse_readme_table(
-        re.compile(r"^\|\s+`([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
-    )
-    disk_skills = _discover_skills()
-    if not readme_skills:
+    section = _readme_section("Available Skills")
+    if not section:
         return issues
+    pattern = re.compile(r"^\|\s+`([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
+    readme_skills = set(pattern.findall(section))
+    disk_skills = _discover_skills()
     extra = readme_skills - disk_skills
     missing = disk_skills - readme_skills
     for name in sorted(extra):
@@ -140,14 +153,14 @@ def _validate_readme_skill_table() -> list[ValidationIssue]:
 
 
 def _validate_readme_command_table() -> list[ValidationIssue]:
-    """Check README commands table matches commands on disk."""
+    """Check README Available Commands table matches commands on disk."""
     issues: list[ValidationIssue] = []
-    readme_commands = _parse_readme_table(
-        re.compile(r"^\|\s+`/([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
-    )
-    disk_commands = _discover_commands()
-    if not readme_commands:
+    section = _readme_section("Available Commands")
+    if not section:
         return issues
+    pattern = re.compile(r"^\|\s+`/([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
+    readme_commands = set(pattern.findall(section))
+    disk_commands = _discover_commands()
     extra = readme_commands - disk_commands
     missing = disk_commands - readme_commands
     for name in sorted(extra):
@@ -440,6 +453,40 @@ def validate_command_file(path: Path) -> list[ValidationIssue]:
     return issues
 
 
+PACK_REQUIRED_SECTIONS = [
+    "Who This Is For",
+    "Included Skills",
+    "Recommended Commands",
+    "Best Use Cases",
+    "Example Prompts",
+    "Installation",
+    "When Not to Use",
+]
+
+
+def validate_pack_file(path: Path) -> list[ValidationIssue]:
+    """Validate one skill pack Markdown file."""
+    issues: list[ValidationIssue] = []
+    try:
+        content = path.read_text(encoding="utf-8")
+    except OSError:
+        issues.append(ValidationIssue("ERROR", path, "Could not read pack file."))
+        return issues
+
+    if not content.strip():
+        issues.append(ValidationIssue("ERROR", path, "Pack file is empty."))
+        return issues
+
+    if not content.lstrip().startswith("# "):
+        issues.append(ValidationIssue("WARNING", path, "Pack file does not start with a top-level heading."))
+
+    for section in PACK_REQUIRED_SECTIONS:
+        if f"## {section}" not in content:
+            issues.append(ValidationIssue("WARNING", path, f"Missing required section '## {section}'."))
+
+    return issues
+
+
 def validate_repository() -> list[ValidationIssue]:
     """Validate repository structure, skills, and commands."""
     issues: list[ValidationIssue] = []
@@ -552,10 +599,25 @@ def validate_repository() -> list[ValidationIssue]:
                 )
             )
 
+    # --------------------------------------------------
+    # Validate pack files
+    # --------------------------------------------------
+
+    if PACKS_DIR.is_dir():
+        pack_files = sorted(PACKS_DIR.glob("*.md"))
+        if not pack_files:
+            issues.append(ValidationIssue("WARNING", PACKS_DIR, "No pack Markdown files were found."))
+        for pack_file in pack_files:
+            issues.extend(validate_pack_file(pack_file))
+    else:
+        issues.append(ValidationIssue("WARNING", PACKS_DIR, "Packs directory does not exist."))
+
     required_repository_files = [
         ROOT_DIR / "README.md",
         ROOT_DIR / "LICENSE",
         ROOT_DIR / "CHANGELOG.md",
+        ROOT_DIR / "pyproject.toml",
+        ROOT_DIR / "requirements.txt",
     ]
 
     for required_file in required_repository_files:
@@ -568,6 +630,12 @@ def validate_repository() -> list[ValidationIssue]:
                     "is missing.",
                 )
             )
+
+    install_script = ROOT_DIR / "scripts" / "install-pack.sh"
+    if not install_script.is_file():
+        issues.append(ValidationIssue("WARNING", install_script, "Pack installer script is missing."))
+    elif not os.access(install_script, os.X_OK):
+        issues.append(ValidationIssue("WARNING", install_script, "Pack installer script is not executable."))
 
     issues.extend(_validate_readme_skill_table())
     issues.extend(_validate_readme_command_table())
