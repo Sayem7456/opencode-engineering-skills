@@ -77,6 +77,11 @@ opencode-engineering-skills/
 ├── README.md
 ├── LICENSE
 ├── CHANGELOG.md
+├── pyproject.toml
+├── requirements.txt
+├── .github/
+│   └── workflows/
+│       └── validate.yml
 ├── skills/
 │   ├── python-quality/
 │   │   └── SKILL.md

@@ -21,8 +21,19 @@ jobs:
       - name: Make validator executable
         run: chmod +x scripts/validate-skills.sh
 
-      - name: Validate skills
+      - name: Validate skills (shell)
         run: ./scripts/validate-skills.sh
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation dependencies
+        run: pip install PyYAML
+
+      - name: Validate skills (Python)
+        run: python tests/validate_skills.py
 
       - name: Verify CLI discovery
         run: npx --yes skills add . --list

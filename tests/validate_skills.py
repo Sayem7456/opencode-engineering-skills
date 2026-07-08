@@ -15,7 +15,8 @@ except ImportError as exc:
     raise SystemExit(
         "PyYAML is required.\n"
         "Install it with:\n"
-        "  python -m pip install PyYAML"
+        "  python -m pip install PyYAML\n"
+        "  # or: pip install -r requirements.txt"
     ) from exc
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -38,33 +39,18 @@ REQUIRED_METADATA_FIELDS = {
     "version",
 }
 
-RECOMMENDED_SKILLS = {
-    "python-quality",
-    "fastapi-backend",
-    "sqlalchemy-postgres",
-    "nextjs-frontend",
-    "ui-ux-design",
-    "testing-and-debugging",
-    "security-review",
-    "code-review",
-    "production-readiness",
-    "token-saver",
-    "context-engineering",
-    "repository-navigation",
-}
+def _discover_skills() -> set[str]:
+    """Return all skill directory names found on disk."""
+    if not SKILLS_DIR.is_dir():
+        return set()
+    return {path.name for path in SKILLS_DIR.iterdir() if path.is_dir()}
 
-RECOMMENDED_COMMANDS = {
-    "review",
-    "fix",
-    "debug",
-    "implement",
-    "refactor",
-    "compress-context",
-    "context-audit",
-    "handoff-summary",
-    "plan",
-    "safe-apply",
-}
+
+def _discover_commands() -> set[str]:
+    """Return all command stem names found on disk."""
+    if not COMMANDS_DIR.is_dir():
+        return set()
+    return {path.stem for path in COMMANDS_DIR.glob("*.md")}
 
 
 @dataclass(slots=True)
@@ -119,6 +105,56 @@ def extract_frontmatter(path: Path) -> tuple[dict[str, Any] | None, str]:
         return None, body
 
     return parsed, body
+
+
+README_PATH = ROOT_DIR / "README.md"
+
+
+def _parse_readme_table(pattern: re.Pattern[str]) -> set[str]:
+    """Extract names from a Markdown table in README.md matching the given regex."""
+    if not README_PATH.is_file():
+        return set()
+    try:
+        content = README_PATH.read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    return set(pattern.findall(content))
+
+
+def _validate_readme_skill_table() -> list[ValidationIssue]:
+    """Check README skills table matches skills on disk."""
+    issues: list[ValidationIssue] = []
+    readme_skills = _parse_readme_table(
+        re.compile(r"^\|\s+`([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
+    )
+    disk_skills = _discover_skills()
+    if not readme_skills:
+        return issues
+    extra = readme_skills - disk_skills
+    missing = disk_skills - readme_skills
+    for name in sorted(extra):
+        issues.append(ValidationIssue("WARNING", README_PATH, f"Skill '{name}' listed in README but missing on disk."))
+    for name in sorted(missing):
+        issues.append(ValidationIssue("WARNING", README_PATH, f"Skill '{name}' on disk but missing from README table."))
+    return issues
+
+
+def _validate_readme_command_table() -> list[ValidationIssue]:
+    """Check README commands table matches commands on disk."""
+    issues: list[ValidationIssue] = []
+    readme_commands = _parse_readme_table(
+        re.compile(r"^\|\s+`/([a-z0-9]+(?:-[a-z0-9]+)*)`\s+\|", re.MULTILINE)
+    )
+    disk_commands = _discover_commands()
+    if not readme_commands:
+        return issues
+    extra = readme_commands - disk_commands
+    missing = disk_commands - readme_commands
+    for name in sorted(extra):
+        issues.append(ValidationIssue("WARNING", README_PATH, f"Command '{name}' listed in README but missing on disk."))
+    for name in sorted(missing):
+        issues.append(ValidationIssue("WARNING", README_PATH, f"Command '{name}' on disk but missing from README table."))
+    return issues
 
 
 def validate_skill_directory(
@@ -438,7 +474,7 @@ def validate_repository() -> list[ValidationIssue]:
         issues.extend(validate_skill_directory(skill_dir, seen_names))
 
     existing_skill_names = {path.name for path in skill_dirs}
-    missing_recommended_skills = RECOMMENDED_SKILLS - existing_skill_names
+    missing_recommended_skills = _discover_skills() - existing_skill_names
 
     for missing_skill in sorted(missing_recommended_skills):
         issues.append(
@@ -488,7 +524,7 @@ def validate_repository() -> list[ValidationIssue]:
             issues.extend(validate_command_file(command_file))
 
         existing_commands = {path.stem for path in command_files}
-        missing_commands = RECOMMENDED_COMMANDS - existing_commands
+        missing_commands = _discover_commands() - existing_commands
 
         for missing_command in sorted(missing_commands):
             issues.append(
@@ -532,6 +568,9 @@ def validate_repository() -> list[ValidationIssue]:
                     "is missing.",
                 )
             )
+
+    issues.extend(_validate_readme_skill_table())
+    issues.extend(_validate_readme_command_table())
 
     return issues
 

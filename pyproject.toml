@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "opencode-engineering-skills"
+version = "1.0.0"
+description = "Curated collection of reusable engineering skills and slash commands for OpenCode"
+license = { text = "MIT" }
+authors = [
+    { name = "Md Sayem Ahamed" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.urls]
+repository = "https://github.com/Sayem7456/opencode-engineering-skills"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = []
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
