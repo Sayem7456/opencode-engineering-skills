@@ -13,13 +13,13 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `llm-app-security` | Available | Review and harden LLM apps against prompt injection, data leakage, unsafe tool use and untrusted output |
 | `prompt-injection-defense` | Available | Design, review and implement defenses against direct and indirect prompt injection |
 | `rag-quality-review` | Available | Review and improve RAG systems for chunking, retrieval, grounding, citations, evaluation and safety |
-| `ai-evaluation` | **Planned** | Systematic evaluation of LLM outputs, metrics, and benchmarks |
+| `ai-evaluation` | Available | Design and review evaluation workflows for LLM, RAG and AI systems |
 | `model-serving-production` | **Planned** | Deploying and operating LLM inference endpoints at scale |
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
 | `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
 | `context-engineering` | Available | Structured context for multi-step AI debugging |
 
-> **Note:** Three skills are marked as **Planned**. They do not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
+> **Note:** One skill is marked as **Planned**. It does not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
 
 ## Recommended Commands
 
@@ -63,6 +63,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill llm-app-security \
   --skill prompt-injection-defense \
   --skill rag-quality-review \
+  --skill ai-evaluation \
   --agent opencode \
   --global
 ```
