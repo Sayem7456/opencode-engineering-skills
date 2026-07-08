@@ -16,6 +16,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `ai-evaluation` | **Planned** | Systematic evaluation of LLM outputs, metrics, and benchmarks |
 | `model-serving-production` | **Planned** | Deploying and operating LLM inference endpoints at scale |
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
+| `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
 | `context-engineering` | Available | Structured context for multi-step AI debugging |
 
 > **Note:** Five skills are marked as **Planned**. They do not yet exist in this repository. The pack can be used with the available skills today. Planned skills will be added in future releases.
@@ -58,6 +59,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill testing-and-debugging \
   --skill token-saver \
   --skill context-engineering \
+  --skill structured-output-reliability \
   --agent opencode \
   --global
 ```
