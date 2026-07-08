@@ -59,6 +59,7 @@ The five new slash commands invoke these skills directly:
 | `prompt-injection-defense` | Design, review and implement defenses against direct and indirect prompt injection in LLM applications |
 | `rag-quality-review` | Review and improve retrieval-augmented generation systems for chunking, retrieval, grounding, citations, evaluation and safety |
 | `ai-evaluation` | Design and review evaluation workflows for LLM, RAG and AI systems, including test sets, metrics, judge prompts, reliability and regression testing |
+| `ai-cost-optimization` | Optimize LLM and AI application cost through prompt efficiency, caching, model routing, batching, retrieval control and safe fallback strategies |
 
 ## Available Commands
 
@@ -85,7 +86,7 @@ Skill packs are curated groups of skills organized by role and workflow. They ar
 | `frontend-pack` | Frontend developer | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review | Next.js pages, components, UI |
 | `review-pack` | Reviewer | code-review, security-review, testing-and-debugging, production-readiness | PR review, security audit |
 | `production-pack` | DevOps / platform | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering | Deployment assessment, incident investigation |
-| `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, + 1 planned skill | LLM apps, RAG pipelines, model serving |
+| `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, + 1 planned skill | LLM apps, RAG pipelines, model serving |
 | `fullstack-pack` | Full-stack developer | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation | End-to-end features, cross-stack debugging |
 
 ### Installation
@@ -161,6 +162,8 @@ opencode-engineering-skills/
 │   ├── rag-quality-review/
 │   │   └── SKILL.md
 │   ├── ai-evaluation/
+│   │   └── SKILL.md
+│   ├── ai-cost-optimization/
 │   │   └── SKILL.md
 │   ├── production-readiness/
 │   │   └── SKILL.md
@@ -364,7 +367,7 @@ Available packs and their included skills:
 | `frontend` | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review |
 | `review` | code-review, security-review, testing-and-debugging, production-readiness |
 | `production` | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering |
-| `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation (planned skills excluded — see packs/ai-engineer-pack.md) |
+| `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization (planned skills excluded — see packs/ai-engineer-pack.md) |
 | `fullstack` | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation |
 
 Pack files in `packs/` contain detailed guidance for each pack including example prompts, best use cases, and when not to use.
@@ -717,6 +720,7 @@ Project-specific rules can still be defined separately in the project’s own `A
 | `prompt-injection-defense` | Applications accept any user input without inspection; indirect injection in RAG data goes undetected | Input classification, structural separation, output validation, instruction hierarchy, and layered defense prevent injection from reaching the model |
 | `rag-quality-review` | RAG pipeline produces hallucinated, uncited, or low-quality answers; retrieval quality is unknown | Ingestion, chunking, search, reranking, evaluation, and security are reviewed systematically with metrics before optimization |
 | `ai-evaluation` | Evaluation is ad-hoc, unlabeled, or uses LLM judges without calibration; regressions go undetected | Golden test sets, calibrated judges, inter-rater reliability, statistical comparison, and CI gates produce trustworthy quality signals |
+| `ai-cost-optimization` | LLM costs grow unbounded; expensive models used for every request; no caching or budget enforcement | Token budgets, model routing, caching, retrieval limits, and cost gates control spend without blind quality reduction |
 
 # Advantages
 

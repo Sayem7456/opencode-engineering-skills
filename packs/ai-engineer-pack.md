@@ -14,6 +14,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `prompt-injection-defense` | Available | Design, review and implement defenses against direct and indirect prompt injection |
 | `rag-quality-review` | Available | Review and improve RAG systems for chunking, retrieval, grounding, citations, evaluation and safety |
 | `ai-evaluation` | Available | Design and review evaluation workflows for LLM, RAG and AI systems |
+| `ai-cost-optimization` | Available | Optimize LLM and AI application cost through caching, routing, batching and budgets |
 | `model-serving-production` | **Planned** | Deploying and operating LLM inference endpoints at scale |
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
 | `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
@@ -64,6 +65,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill prompt-injection-defense \
   --skill rag-quality-review \
   --skill ai-evaluation \
+  --skill ai-cost-optimization \
   --agent opencode \
   --global
 ```
