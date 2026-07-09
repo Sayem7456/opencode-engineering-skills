@@ -4,6 +4,15 @@ description: Implement a new feature using existing project conventions
 
 Implement this feature using the relevant global skills.
 
+Use the `repo_map` custom tool to map the repository structure, identify relevant files, and detect existing conventions before writing code. Use `prompt_budget` to estimate context size of files that will be inspected.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/repo_map.py [path]
+- python tools/prompt_budget.py --dir <path>
+
+Do not skip required code inspection or tests just to save tokens.
+Do not summarize away security, schema, migration, or API contract details.
+
 ## Overlap control
 
 1. Start with `skill-orchestrator` when task scope is broad or ambiguous.

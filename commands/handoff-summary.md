@@ -4,6 +4,16 @@ description: Create a handoff summary for continuing in a new OpenCode session
 
 Create a handoff summary using context-engineering so a new session can continue without reading prior conversation.
 
+Use the `context_compressor` custom tool to compress session logs, errors, and file paths while preserving exact errors, commands, and verification status. Use `prompt_budget` to estimate context size of files that need to be described.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/context_compressor.py --file <path>
+- python tools/prompt_budget.py --dir <path>
+
+Do not skip required code inspection or tests just to save tokens.
+Do not summarize away security, schema, migration, or API contract details.
+Do not claim exact token counts — use estimates only.
+
 Include:
 
 - goal

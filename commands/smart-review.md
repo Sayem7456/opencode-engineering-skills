@@ -4,6 +4,11 @@ description: Review code with one lead review skill and only necessary supportin
 
 Use skill-orchestrator first. Determine the review type from the target and produce a review plan, then perform the review.
 
+Use the `diff_summarizer` custom tool to summarize git diffs with per-file risk classification, symbol detection, and skill/test suggestions.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/diff_summarizer.py [--file <path> or --stdin]
+
 $ARGUMENTS
 
 ## Review Type Determination

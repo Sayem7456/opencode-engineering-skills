@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.3.0 (2026-07-09)
+
+### Added
+
+- 4 OpenCode custom tools (TypeScript wrappers + Python backends):
+  - `repo_map` — compact repository map with language/framework detection
+  - `diff_summarizer` — git diff summarization with per-file risk classification and secret redaction
+  - `context_compressor` — session context compression preserving exact errors, paths, and commands
+  - `prompt_budget` — token/character estimation with reading strategy recommendations
+- `opencode-tools/` directory containing 4 `.ts` wrapper files
+- `tools/` directory containing 4 Python backend scripts
+- 4 test files: `tests/test_repo_map.py`, `tests/test_diff_summarizer.py`, `tests/test_context_compressor.py`, `tests/test_prompt_budget.py`
+- Custom tool validation in `tests/validate_skills.py` and `scripts/validate-skills.sh`
+- Install/uninstall support for `~/.config/opencode/tools/` in shell installer
+
+### Changed
+
+- All 13 command files updated to reference the relevant custom tools with Python fallback instructions
+- `README.md` — added Available Custom Tools table, updated command table with tool mapping, updated repo diagram, added tool installation/verification/uninstallation, condensed Beginner Quickstart / Example Prompts / Slash Command Examples into single Command Usage Guide
+
 ## 1.2.0 (2026-07-09)
 
 ### Added

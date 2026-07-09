@@ -20,6 +20,19 @@ These skills provide structured workflows and engineering standards for:
 
 The package helps OpenCode produce more consistent, maintainable, secure, and production-aware results across backend and frontend projects.
 
+## Available Custom Tools
+
+This repository includes four OpenCode custom tools (`.ts` wrappers) backed by Python scripts. They help the agent save tokens, understand diffs, navigate repositories, and compress context.
+
+| Tool | Purpose | Python Fallback |
+|------|---------|-----------------|
+| `repo_map` | Generate a compact repository map with language/framework detection | `python tools/repo_map.py` |
+| `diff_summarizer` | Summarize git diffs with per-file risk classification, symbol detection, and skill/test suggestions | `python tools/diff_summarizer.py` |
+| `context_compressor` | Compress logs, stack traces, and session context while preserving exact errors, paths, and commands | `python tools/context_compressor.py` |
+| `prompt_budget` | Estimate context size (chars/tokens) and recommend reading strategies | `python tools/prompt_budget.py` |
+
+These tools are installed as symlinks to `~/.config/opencode/tools/` by the installer. If a custom tool is unavailable, the Python scripts in `tools/` can be run directly from the cloned repository.
+
 ## Token Saving and Context Compression
 
 This release introduces skills and commands focused on reducing token waste during OpenCode sessions. These are guidance skills: they instruct the agent on efficient reading, summarization, and context handoff. They do not automatically compress context or inject tooling — they change how the agent uses the tools it already has.
@@ -65,21 +78,21 @@ The five new slash commands invoke these skills directly:
 
 ## Available Commands
 
-| Command      | Purpose                                                     |
-| ------------ | ----------------------------------------------------------- |
-| `/review`            | Review selected code without modifying it                                      |
-| `/fix`               | Fix a confirmed defect and add regression coverage                             |
-| `/debug`             | Investigate a bug and identify its root cause                                  |
-| `/implement`         | Implement a new feature using existing project conventions                     |
-| `/refactor`          | Refactor existing code while preserving observable behavior                    |
-| `/choose-skills`     | Select the best lead and supporting skills while avoiding overlapping instructions |
-| `/smart-review`      | Review code with one lead review skill and only necessary supporting skills    |
-| `/smart-fix`         | Fix a bug using minimum necessary skills and focused verification              |
-| `/compress-context`  | Compress the current session context into a concise working summary            |
-| `/context-audit`     | Audit the current session for wasted context and missing information           |
-| `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              |
-| `/plan`              | Create a compact implementation plan before editing code                       |
-| `/safe-apply`        | Apply a planned change safely with diff inspection and verification            |
+| Command      | Purpose                                                                                     | Uses Custom Tool |
+| ------------ | ------------------------------------------------------------------------------------------- | ---------------- |
+| `/review`            | Review selected code without modifying it                                      | `diff_summarizer` |
+| `/fix`               | Fix a confirmed defect and add regression coverage                             | `diff_summarizer` |
+| `/debug`             | Investigate a bug and identify its root cause                                  | `diff_summarizer`, `repo_map` |
+| `/implement`         | Implement a new feature using existing project conventions                     | `repo_map`, `prompt_budget` |
+| `/refactor`          | Refactor existing code while preserving observable behavior                    | `repo_map`, `diff_summarizer` |
+| `/choose-skills`     | Select the best lead and supporting skills while avoiding overlapping instructions | — |
+| `/smart-review`      | Review code with one lead review skill and only necessary supporting skills    | `diff_summarizer` |
+| `/smart-fix`         | Fix a bug using minimum necessary skills and focused verification              | `diff_summarizer` |
+| `/compress-context`  | Compress the current session context into a concise working summary            | `context_compressor`, `prompt_budget` |
+| `/context-audit`     | Audit the current session for wasted context and missing information           | `prompt_budget`, `context_compressor` |
+| `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              | `context_compressor`, `prompt_budget` |
+| `/plan`              | Create a compact implementation plan before editing code                       | `repo_map`, `prompt_budget` |
+| `/safe-apply`        | Apply a planned change safely with diff inspection and verification            | `diff_summarizer` |
 
 ## Skill Packs
 
@@ -184,7 +197,20 @@ opencode-engineering-skills/
 │   ├── context-audit.md
 │   ├── handoff-summary.md
 │   ├── plan.md
-│   └── safe-apply.md
+│   ├── safe-apply.md
+│   ├── choose-skills.md
+│   ├── smart-review.md
+│   └── smart-fix.md
+├── opencode-tools/
+│   ├── repo_map.ts
+│   ├── diff_summarizer.ts
+│   ├── context_compressor.ts
+│   └── prompt_budget.ts
+├── tools/
+│   ├── repo_map.py
+│   ├── diff_summarizer.py
+│   ├── context_compressor.py
+│   └── prompt_budget.py
 ├── scripts/
 │   ├── install-opencode.sh
 │   ├── install-pack.sh
@@ -198,10 +224,17 @@ opencode-engineering-skills/
 │   ├── ai-engineer-pack.md
 │   └── fullstack-pack.md
 ├── tests/
-│   └── validate_skills.py
+│   ├── validate_skills.py
+│   ├── test_repo_map.py
+│   ├── test_diff_summarizer.py
+│   ├── test_context_compressor.py
+│   └── test_prompt_budget.py
 └── docs/
     ├── token-saving-guide.md
-    └── advanced-roadmap.md
+    ├── opencode-custom-tools-design.md
+    ├── advanced-roadmap.md
+    ├── skill-orchestration-design.md
+    └── skill-routing-matrix.md
 ```
 
 # Installation
@@ -324,9 +357,10 @@ The installer symlinks content into:
 ```text
 ~/.config/opencode/skills/
 ~/.config/opencode/commands/
+~/.config/opencode/tools/
 ```
 
-It installs all skills and all command files from this repository.
+It installs all skills, command files, and TypeScript custom tool wrappers from this repository.
 
 **Summary:**
 
@@ -334,7 +368,7 @@ It installs all skills and all command files from this repository.
 | -------------------------------- | ----------------------------------------------------------------- |
 | Skills only                      | `npx skills add Sayem7456/opencode-engineering-skills --skill '*'` |
 | Skills by role pack              | `scripts/install-pack.sh <pack-name>`                             |
-| Skills + slash commands          | `scripts/install-opencode.sh`                                     |
+| Skills + slash commands + tools  | `scripts/install-opencode.sh`                                     |
 | Selected skills only             | `npx skills add ... --skill token-saver --skill context-engineering` |
 
 Restart OpenCode or open a new session after installation.
@@ -418,6 +452,15 @@ List installed commands:
 find ~/.config/opencode/commands \
   -maxdepth 1 \
   -name '*.md' \
+  -print
+```
+
+List installed custom tools:
+
+```bash
+find ~/.config/opencode/tools \
+  -maxdepth 1 \
+  -name '*.ts' \
   -print
 ```
 
@@ -534,6 +577,13 @@ rm -f ~/.config/opencode/commands/context-audit.md
 rm -f ~/.config/opencode/commands/handoff-summary.md
 rm -f ~/.config/opencode/commands/plan.md
 rm -f ~/.config/opencode/commands/safe-apply.md
+```
+
+```bash
+rm -f ~/.config/opencode/tools/repo_map.ts
+rm -f ~/.config/opencode/tools/diff_summarizer.ts
+rm -f ~/.config/opencode/tools/context_compressor.ts
+rm -f ~/.config/opencode/tools/prompt_budget.ts
 ```
 
 # How Skills Work
@@ -792,134 +842,35 @@ support skills, and excluded skills. Then fix the issue
 with focused verification.
 ```
 
-# Beginner Quickstart
+# Command Usage Guide
 
-Use `/choose-skills` to start any task. It produces a skill plan with the right lead, support, and guardrail skills — no need to memorize combinations.
+Start any task with `/choose-skills` to produce a skill plan — no need to memorize combinations.
 
-```text
-/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.
-```
+| Step | Command | When to Use | Example |
+|------|---------|-------------|---------|
+| 1. Plan | `/choose-skills` | Any new task — produces a skill plan before work begins | `/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.` |
+| 2. Explore | `/plan` | Before implementing — maps affected files and risks | `/plan Add a paginated teacher dashboard endpoint with branch-level access control.` |
+| 2. Debug | `/debug` | Root cause is unknown; need investigation | `/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError.` |
 
-```text
-/choose-skills Fix the null pointer exception in the payment processing service.
-```
+**Choose your execution path:**
 
-```text
-/choose-skills Review the pull request adding a new user roles feature.
-```
+| Path | Command | When to Use | Example |
+|------|---------|-------------|---------|
+| Fix (known bug) | `/fix` | Root cause is confirmed; need a fix + regression test | `/fix The background task reuses the request-scoped session after the request completes.` |
+| Fix (unknown scope) | `/smart-fix` | Bug report is vague; need skill orchestration + fix | `/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.` |
+| Apply planned change | `/safe-apply` | After `/plan` approved; applies with diff inspection + verification | `/safe-apply Apply the approved plan for the paginated teacher dashboard endpoint.` |
+| Review (known code) | `/review` | Review specific files; user knows the scope | `/review src/services/assignment_service.py` |
+| Review (unknown scope) | `/smart-review` | Review scope is broad; need skill orchestration first | `/smart-review src/routes/users.py` |
 
-```text
-/choose-skills Implement an export-to-CSV endpoint for the analytics dashboard.
-```
+**Context management:**
 
-```text
-/choose-skills Refactor the assignment scoring logic into a separate service.
-```
-
-After the skill plan is approved, use `/smart-fix`, `/smart-review`, or continue with standard commands:
-
-```text
-/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.
-```
-
-```text
-/smart-review src/routes/users.py
-```
-
-# Example Prompts Reference
-
-Each command file contains its own detailed prompt. Use these as quick starters.
-
-| Command | Usage |
-|---------|-------|
-| `/review` | Review code without modifying it |
-| `/debug` | Investigate a bug's root cause |
-| `/fix` | Fix a confirmed defect with regression coverage |
-| `/implement` | Build a new feature following project conventions |
-| `/refactor` | Restructure code preserving observable behavior |
-| `/choose-skills` | Generate a skill plan before starting work |
-| `/smart-review` | Review with one lead skill and scoped support |
-| `/smart-fix` | Fix with minimum skills and focused verification |
-
-# Slash Command Examples
-
-## Review Code
-
-```text
-/review src/services/assignment_service.py
-```
-
-## Debug a Failure
-
-```text
-/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError after the AI evaluation completes.
-```
-
-## Fix a Confirmed Defect
-
-```text
-/fix The background task reuses the request-scoped SQLAlchemy session after the request has completed.
-```
-
-## Implement a Feature
-
-```text
-/implement Add a paginated teacher assignment history endpoint with branch-level authorization and filtering by status.
-```
-
-## Refactor a Feature
-
-```text
-/refactor Refactor the assignment generation routes so business logic is moved into the service layer without changing the API contract.
-```
-
-## Choose Skills
-
-```text
-/choose-skills Review the pull request adding a new user roles feature.
-```
-
-## Smart Review
-
-```text
-/smart-review src/routes/users.py
-```
-
-## Smart Fix
-
-```text
-/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.
-```
-
-## Compress Context
-
-```text
-/compress-context I am investigating why the user creation endpoint fails under load. I have read the route, service, model, and test files. Compress the session into a working summary.
-```
-
-## Audit Context
-
-```text
-/context-audit I have been debugging this SQLAlchemy transaction issue for several turns. Check whether I am wasting context on irrelevant files or missing critical information.
-```
-
-## Create Handoff Summary
-
-```text
-/handoff-summary I need to hand off this FastAPI migration work to a new session. I have updated the User model and created the migration but have not run the tests yet.
-```
-
-## Plan Before Implementing
-
-```text
-/plan Add a paginated teacher dashboard endpoint with branch-level access control.
-```
-
-## Safe Apply After Plan
-
-```text
-/safe-apply Apply the changes from the approved plan for the paginated teacher dashboard endpoint.
-```
+| Command | When to Use | Example |
+|---------|-------------|---------|
+| `/implement` | Build a new feature following project conventions | `/implement Add an export-to-CSV endpoint for the analytics dashboard.` |
+| `/refactor` | Restructure code preserving public behavior | `/refactor Move assignment scoring logic into a separate service.` |
+| `/compress-context` | Session is long; produce a working summary | `/compress-context I am investigating a user-creation endpoint failure under load.` |
+| `/context-audit` | Session feels wasteful; find wasted context | `/context-audit I have been debugging this transaction issue for several turns.` |
+| `/handoff-summary` | Handing off to a new session | `/handoff-summary I need to hand off this FastAPI migration to a new session.` |
 
 # Best Practices
 
@@ -1013,6 +964,9 @@ Validation should confirm:
 * skill names use lowercase letters, numbers, and single hyphens
 * no duplicate skill names exist
 * command files contain valid metadata
+* custom tool `.ts` files import `tool` from `@opencode-ai/plugin`, export `default tool(...)`, and contain `description`, `args`, and `execute`
+* tool filenames use lowercase with underscores only
+* Python tool scripts in `tools/` exist and are non-empty
 
 # Versioning
 

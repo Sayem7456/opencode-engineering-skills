@@ -4,6 +4,14 @@ description: Review the requested code without modifying it
 
 Review the requested code using the relevant global skills.
 
+Use the `diff_summarizer` custom tool to summarize git diffs with per-file risk classification, symbol detection, and skill/test suggestions.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/diff_summarizer.py [--file <path> or --stdin]
+
+Do not skip required code inspection or tests just to save tokens.
+Do not summarize away security, schema, migration, or API contract details.
+
 ## Overlap control
 
 1. Start with `skill-orchestrator` when task scope is broad or ambiguous.

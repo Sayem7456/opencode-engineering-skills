@@ -4,6 +4,15 @@ description: Refactor existing code while preserving observable behavior
 
 Refactor the specified feature using code-review, testing-and-debugging, and relevant stack-specific skills.
 
+Use the `repo_map` custom tool to understand the repository structure and locate relevant files. Use `diff_summarizer` to inspect the diff after changes, classify per-file risk, and detect affected symbols.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/repo_map.py [path]
+- python tools/diff_summarizer.py [--file <path> or --stdin]
+
+Do not skip required code inspection or tests just to save tokens.
+Do not summarize away security, schema, migration, or API contract details.
+
 ## Overlap control
 
 1. Start with `skill-orchestrator` when task scope is broad or ambiguous.

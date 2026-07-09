@@ -6,6 +6,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_DIR="$ROOT/skills"
 COMMANDS_DIR="$ROOT/commands"
 DOCS_DIR="$ROOT/docs"
+TOOLS_DIR="$ROOT/opencode-tools"
+PYTHON_TOOLS_DIR="$ROOT/tools"
 
 failed=0
 
@@ -284,6 +286,102 @@ else
     echo "  WARNING: Docs directory does not exist."
     echo ""
 fi
+
+# --------------------------------------------------
+# Validate TypeScript custom tool wrappers
+# --------------------------------------------------
+
+echo "=== Validating TypeScript custom tool wrappers ==="
+echo ""
+
+if [[ -d "$TOOLS_DIR" ]]; then
+    for tool_file in "$TOOLS_DIR"/*.ts; do
+        [[ -f "$tool_file" ]] || continue
+
+        tool_filename="$(basename "$tool_file")"
+        tool_name="${tool_filename%.ts}"
+
+        echo "Checking $tool_filename..."
+
+        # Check filename: lowercase with underscores only
+        if [[ ! "$tool_name" =~ ^[a-z][a-z0-9_]*$ ]]; then
+            echo "  ERROR: filename must be lowercase with underscores only"
+            failed=1
+        fi
+
+        # Check for built-in name collision
+        case "$tool_name" in
+            bash|read|write|edit|grep|glob)
+                echo "  WARNING: '$tool_name' collides with a likely built-in tool name"
+                ;;
+        esac
+
+        # Check for required import
+        if ! grep -q 'import { tool } from "@opencode-ai/plugin"' "$tool_file"; then
+            echo "  ERROR: missing import of tool from @opencode-ai/plugin"
+            failed=1
+        fi
+
+        # Check for required export
+        if ! grep -q "export default tool(" "$tool_file"; then
+            echo "  ERROR: missing export default tool(...)"
+            failed=1
+        fi
+
+        # Check for required properties
+        if ! grep -q 'description:' "$tool_file"; then
+            echo "  ERROR: missing description property"
+            failed=1
+        fi
+
+        if ! grep -q '^[[:space:]]*args:' "$tool_file"; then
+            echo "  ERROR: missing args property"
+            failed=1
+        fi
+
+        if ! grep -q 'execute' "$tool_file"; then
+            echo "  ERROR: missing execute property"
+            failed=1
+        fi
+
+        # Check file is non-empty
+        if [[ ! -s "$tool_file" ]]; then
+            echo "  ERROR: file is empty"
+            failed=1
+        fi
+
+        echo ""
+    done
+else
+    echo "  WARNING: opencode-tools directory does not exist."
+    echo ""
+fi
+
+# --------------------------------------------------
+# Validate Python tool backend scripts
+# --------------------------------------------------
+
+echo "=== Validating Python tool backend scripts ==="
+echo ""
+
+if [[ -d "$PYTHON_TOOLS_DIR" ]]; then
+    for py_file in repo_map.py diff_summarizer.py context_compressor.py prompt_budget.py; do
+        py_path="$PYTHON_TOOLS_DIR/$py_file"
+        if [[ ! -f "$py_path" ]]; then
+            echo "  ERROR: required Python tool script '$py_file' is missing"
+            failed=1
+        elif [[ ! -s "$py_path" ]]; then
+            echo "  ERROR: '$py_file' is empty"
+            failed=1
+        else
+            echo "  OK: $py_file"
+        fi
+    done
+else
+    echo "  WARNING: tools directory does not exist."
+fi
+
+echo ""
 
 # --------------------------------------------------
 # Summary

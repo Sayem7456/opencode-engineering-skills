@@ -4,6 +4,12 @@ description: Create a compact implementation plan before editing code
 
 Create a compact implementation plan using repository-navigation and the relevant stack-specific skills.
 
+Use the `repo_map` custom tool to generate a compact map of the repository structure, detect languages and frameworks, and identify relevant directories. Use `prompt_budget` to estimate context size of files that may need inspection.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/repo_map.py [path]
+- python tools/prompt_budget.py --dir <path>
+
 ## Overlap control
 
 1. Start with `skill-orchestrator` when task scope is broad or ambiguous.

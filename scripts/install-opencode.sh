@@ -7,15 +7,18 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_SOURCE_DIR="$REPO_ROOT/skills"
 COMMANDS_SOURCE_DIR="$REPO_ROOT/commands"
 DOCS_SOURCE_DIR="$REPO_ROOT/docs"
+TOOLS_SOURCE_DIR="$REPO_ROOT/opencode-tools"
 
 OPENCODE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 SKILLS_TARGET_DIR="$OPENCODE_CONFIG_DIR/skills"
 COMMANDS_TARGET_DIR="$OPENCODE_CONFIG_DIR/commands"
 DOCS_TARGET_DIR="$OPENCODE_CONFIG_DIR/docs"
+TOOLS_TARGET_DIR="$OPENCODE_CONFIG_DIR/tools"
 
 installed_skills=0
 installed_commands=0
 installed_docs=0
+installed_tools=0
 
 if [[ ! -d "$SKILLS_SOURCE_DIR" ]]; then
     echo "Error: skills directory not found: $SKILLS_SOURCE_DIR" >&2
@@ -106,12 +109,44 @@ if [[ -d "$DOCS_SOURCE_DIR" ]]; then
     done
 fi
 
+# --------------------------------------------------
+# Install tools (TypeScript wrappers for OpenCode custom tools)
+# --------------------------------------------------
+
+if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
+    mkdir -p "$TOOLS_TARGET_DIR"
+
+    for tool_file in "$TOOLS_SOURCE_DIR"/*.ts; do
+        [[ -f "$tool_file" ]] || continue
+
+        tool_filename="$(basename "$tool_file")"
+        tool_name="${tool_filename%.ts}"
+        target="$TOOLS_TARGET_DIR/$tool_filename"
+
+        if [[ -L "$target" ]]; then
+            echo "Replacing existing symlink: $tool_name"
+            rm "$target"
+        elif [[ -e "$target" ]]; then
+            echo "Warning: $tool_name already exists and is not a symlink. Skipping."
+            continue
+        fi
+
+        ln -s "$tool_file" "$target"
+
+        echo "Installed tool: $tool_name"
+        installed_tools=$((installed_tools + 1))
+    done
+else
+    echo "Tools directory not found. Skipping tool installation."
+fi
+
 echo
 echo "Installation completed."
 echo
 echo "Skills installed:   $installed_skills"
 echo "Commands installed: $installed_commands"
 echo "Docs installed:     $installed_docs"
+echo "Tools installed:    $installed_tools"
 echo
 echo "Skills location:"
 echo "$SKILLS_TARGET_DIR"
@@ -121,5 +156,8 @@ echo "$COMMANDS_TARGET_DIR"
 echo
 echo "Docs location:"
 echo "$DOCS_TARGET_DIR"
+echo
+echo "Tools location:"
+echo "$TOOLS_TARGET_DIR"
 echo
 echo "Restart OpenCode or open a new session."

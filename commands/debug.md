@@ -4,6 +4,15 @@ description: Investigate and identify the root cause of a bug
 
 Investigate this bug using testing-and-debugging and the relevant stack-specific skills.
 
+Use the `diff_summarizer` custom tool to examine recent diffs, classify per-file risk, and detect affected symbols. Use `repo_map` to navigate the repository and find relevant files.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/diff_summarizer.py [--file <path> or --stdin]
+- python tools/repo_map.py [path]
+
+Do not skip required code inspection or tests just to save tokens.
+Do not summarize away security, schema, migration, or API contract details.
+
 ## Overlap control
 
 1. Start with `skill-orchestrator` when task scope is broad or ambiguous.

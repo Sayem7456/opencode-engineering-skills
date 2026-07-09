@@ -24,8 +24,34 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 SKILLS_DIR = ROOT_DIR / "skills"
 COMMANDS_DIR = ROOT_DIR / "commands"
 PACKS_DIR = ROOT_DIR / "packs"
+TOOLS_DIR = ROOT_DIR / "opencode-tools"
+PYTHON_TOOLS_DIR = ROOT_DIR / "tools"
 
 VALID_NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+VALID_TOOL_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+
+REQUIRED_TOOL_FILES = [
+    "repo_map.ts",
+    "diff_summarizer.ts",
+    "context_compressor.ts",
+    "prompt_budget.ts",
+]
+
+REQUIRED_PYTHON_TOOL_FILES = [
+    "repo_map.py",
+    "diff_summarizer.py",
+    "context_compressor.py",
+    "prompt_budget.py",
+]
+
+BUILTIN_TOOL_NAMES = frozenset({
+    "bash",
+    "read",
+    "write",
+    "edit",
+    "grep",
+    "glob",
+})
 
 REQUIRED_SKILL_FIELDS = {
     "name",
@@ -459,6 +485,93 @@ def validate_command_file(path: Path) -> list[ValidationIssue]:
     return issues
 
 
+def validate_tool_file(path: Path) -> list[ValidationIssue]:
+    """Validate one OpenCode custom tool TypeScript wrapper."""
+    issues: list[ValidationIssue] = []
+    filename = path.name
+
+    if not filename.endswith(".ts"):
+        issues.append(ValidationIssue("ERROR", path, "Must be a .ts file."))
+        return issues
+
+    tool_name = filename.removesuffix(".ts")
+
+    if not VALID_TOOL_NAME_PATTERN.fullmatch(tool_name):
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Filename must be lowercase with underscores only.",
+            )
+        )
+
+    if tool_name in BUILTIN_TOOL_NAMES:
+        issues.append(
+            ValidationIssue(
+                "WARNING",
+                path,
+                f"Filename '{tool_name}' collides with a likely built-in tool name.",
+            )
+        )
+
+    try:
+        content = path.read_text(encoding="utf-8")
+    except OSError:
+        issues.append(ValidationIssue("ERROR", path, "Could not read file."))
+        return issues
+
+    if not content.strip():
+        issues.append(ValidationIssue("ERROR", path, "File is empty."))
+        return issues
+
+    if 'import { tool } from "@opencode-ai/plugin"' not in content:
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Missing required import: import { tool } from \"@opencode-ai/plugin\".",
+            )
+        )
+
+    if "export default tool(" not in content:
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Missing required export: export default tool(...).",
+            )
+        )
+
+    if "description" not in content:
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Missing description property.",
+            )
+        )
+
+    if "args" not in content:
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Missing args property.",
+            )
+        )
+
+    if "execute" not in content:
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                path,
+                "Missing execute property.",
+            )
+        )
+
+    return issues
+
+
 PACK_REQUIRED_SECTIONS = [
     "Who This Is For",
     "Included Skills",
@@ -667,6 +780,87 @@ def validate_repository() -> list[ValidationIssue]:
                 "WARNING",
                 DOCS_DIR,
                 "Docs directory does not exist.",
+            )
+        )
+
+    # --------------------------------------------------
+    # Validate TypeScript custom tool wrappers
+    # --------------------------------------------------
+
+    if not TOOLS_DIR.is_dir():
+        issues.append(
+            ValidationIssue(
+                "WARNING",
+                TOOLS_DIR,
+                "opencode-tools directory does not exist.",
+            )
+        )
+    else:
+        for required_file in REQUIRED_TOOL_FILES:
+            tool_path = TOOLS_DIR / required_file
+            if not tool_path.is_file():
+                issues.append(
+                    ValidationIssue(
+                        "ERROR",
+                        TOOLS_DIR,
+                        f"Required tool file '{required_file}' is missing.",
+                    )
+                )
+            else:
+                issues.extend(validate_tool_file(tool_path))
+
+        # Warn about unexpected .ts files beyond the required set
+        expected = set(REQUIRED_TOOL_FILES)
+        for path in sorted(TOOLS_DIR.glob("*.ts")):
+            if path.name not in expected:
+                issues.append(
+                    ValidationIssue(
+                        "WARNING",
+                        path,
+                        "Unexpected tool file (not in the required set).",
+                    )
+                )
+
+        # Check for non-TS files in the directory
+        for path in sorted(TOOLS_DIR.iterdir()):
+            if path.is_file() and path.suffix != ".ts" and not path.name.startswith("."):
+                issues.append(
+                    ValidationIssue(
+                        "WARNING",
+                        path,
+                        "Unexpected non-TS file in opencode-tools directory.",
+                    )
+                )
+
+    # --------------------------------------------------
+    # Validate Python tool backend scripts
+    # --------------------------------------------------
+
+    if PYTHON_TOOLS_DIR.is_dir():
+        for required_file in REQUIRED_PYTHON_TOOL_FILES:
+            py_path = PYTHON_TOOLS_DIR / required_file
+            if not py_path.is_file():
+                issues.append(
+                    ValidationIssue(
+                        "ERROR",
+                        PYTHON_TOOLS_DIR,
+                        f"Required Python tool script '{required_file}' is missing.",
+                    )
+                )
+            elif py_path.stat().st_size == 0:
+                issues.append(
+                    ValidationIssue(
+                        "ERROR",
+                        py_path,
+                        "Python tool script is empty.",
+                    )
+                )
+    else:
+        issues.append(
+            ValidationIssue(
+                "WARNING",
+                PYTHON_TOOLS_DIR,
+                "tools directory does not exist.",
             )
         )
 

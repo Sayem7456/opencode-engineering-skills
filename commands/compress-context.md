@@ -4,6 +4,12 @@ description: Compress the current session context into a concise but complete wo
 
 Compress the current session context using token-saver and context-engineering.
 
+Use the `context_compressor` custom tool to compress logs, errors, file paths, and commands while preserving exact errors and verification status. Use `prompt_budget` to estimate token counts before and after compression.
+
+If the custom tool is unavailable, use the Python script directly from the cloned repository:
+- python tools/context_compressor.py --file <path>
+- python tools/prompt_budget.py --file <path>
+
 Preserve exactly:
 
 - task goal
@@ -21,6 +27,7 @@ Do not invent information.
 Do not keep exploration that led nowhere.
 Do not keep redundant or repeated content.
 Do not remove exact error messages, file paths, or commands.
+Do not claim exact token counts — use estimates only.
 
 Remove or summarize:
 
