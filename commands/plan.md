@@ -2,7 +2,7 @@
 description: Create a compact implementation plan before editing code
 ---
 
-Create a compact implementation plan using repository-navigation and the relevant stack-specific skills.
+Create a compact implementation plan using repository-navigation skill and the relevant stack-specific skills.
 
 Use the `repo_map` custom tool to generate a compact map of the repository structure, detect languages and frameworks, and identify relevant directories. Use `prompt_budget` to estimate context size of files that may need inspection.
 

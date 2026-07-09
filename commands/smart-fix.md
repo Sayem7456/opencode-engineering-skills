@@ -2,7 +2,7 @@
 description: Fix a bug using the minimum necessary skills, focused verification, and overlap-controlled output.
 ---
 
-Use skill-orchestrator to classify the task. Determine the lead skill, supporting skills, guardrails, and verbosity before fixing.
+Use skill-orchestrator skill to classify the task. Determine the lead skill, supporting skills, guardrails, and verbosity before fixing.
 
 Use the `diff_summarizer` custom tool to summarize the diff of changes, classify per-file risk, and detect affected symbols.
 

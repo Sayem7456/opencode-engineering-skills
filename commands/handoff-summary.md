@@ -2,7 +2,7 @@
 description: Create a handoff summary for continuing in a new OpenCode session
 ---
 
-Create a handoff summary using context-engineering so a new session can continue without reading prior conversation.
+Create a handoff summary using context-engineering skill so a new session can continue without reading prior conversation.
 
 Use the `context_compressor` custom tool to compress session logs, errors, and file paths while preserving exact errors, commands, and verification status. Use `prompt_budget` to estimate context size of files that need to be described.
 

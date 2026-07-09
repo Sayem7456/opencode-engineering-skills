@@ -2,7 +2,7 @@
 description: Audit whether the current task is wasting context and identify improvements
 ---
 
-Audit the current session context using token-saver and context-engineering.
+Audit the current session context using token-saver and context-engineering skills.
 
 Use the `prompt_budget` custom tool to estimate character and token sizes of files and directories. Use `context_compressor` to identify what would be preserved or lost during compression.
 

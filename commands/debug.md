@@ -2,7 +2,7 @@
 description: Investigate and identify the root cause of a bug
 ---
 
-Investigate this bug using testing-and-debugging and the relevant stack-specific skills.
+Investigate this bug using testing-and-debugging skill and the relevant stack-specific skills.
 
 Use the `diff_summarizer` custom tool to examine recent diffs, classify per-file risk, and detect affected symbols. Use `repo_map` to navigate the repository and find relevant files.
 

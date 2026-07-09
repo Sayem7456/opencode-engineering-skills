@@ -2,7 +2,7 @@
 description: Compress the current session context into a concise but complete working summary
 ---
 
-Compress the current session context using token-saver and context-engineering.
+Compress the current session context using token-saver and context-engineering skills.
 
 Use the `context_compressor` custom tool to compress logs, errors, file paths, and commands while preserving exact errors and verification status. Use `prompt_budget` to estimate token counts before and after compression.
 

@@ -2,7 +2,7 @@
 description: Review code with one lead review skill and only necessary supporting skills to reduce overlap and verbosity.
 ---
 
-Use skill-orchestrator first. Determine the review type from the target and produce a review plan, then perform the review.
+Use skill-orchestrator skill first. Determine the review type from the target and produce a review plan, then perform the review.
 
 Use the `diff_summarizer` custom tool to summarize git diffs with per-file risk classification, symbol detection, and skill/test suggestions.
 

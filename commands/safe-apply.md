@@ -2,7 +2,7 @@
 description: Apply a planned change safely with verification
 ---
 
-Apply the planned change safely using testing-and-debugging and the relevant stack-specific skills.
+Apply the planned change safely using testing-and-debugging skill and the relevant stack-specific skills.
 
 Use the `diff_summarizer` custom tool to inspect the diff before applying, classify per-file risk, and detect affected symbols.
 
