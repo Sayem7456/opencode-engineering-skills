@@ -883,6 +883,23 @@ only if data exposure is found.
 
 Three skills plus a conditional guardrail. The lead drives the fix workflow; the support adds database-specific guidance; the guardrail activates only if the bug reveals sensitive data.
 
+### Token Cost Comparison
+
+The following table shows the estimated context savings of using orchestrated skill selection instead of loading every available skill. Estimates are based on SKILL.md file sizes (~4 chars per token, English prose).
+
+| Scenario | Skills Loaded | Tokens | Savings |
+|----------|--------------|--------|---------|
+| **Bad — all 20 skills + all 13 commands** | All skills, all commands | ~90,648 | baseline |
+| **Good — general code review** | `skill-orchestrator` + `code-review` + 2 smart commands | ~5,933 | **93.5%** |
+| **Good — Python bug fix** | `skill-orchestrator` + `testing-and-debugging` + `python-quality` + 2 smart commands | ~7,827 | **91.4%** |
+| **Good — security review** | `skill-orchestrator` + `security-review` + `code-review` + 2 smart commands | ~8,927 | **90.2%** |
+| **Good — FastAPI bug fix** | `skill-orchestrator` + `testing-and-debugging` + `fastapi-backend` + `security-review` + 2 smart commands | ~11,541 | **87.3%** |
+| **Good — SQLAlchemy issue** | `skill-orchestrator` + `sqlalchemy-postgres` + `testing-and-debugging` + 2 smart commands | ~13,421 | **85.2%** |
+| **Good — Next.js page** | `skill-orchestrator` + `nextjs-frontend` + `ui-ux-design` + `security-review` + 2 smart commands | ~14,775 | **83.7%** |
+| **Good — production release** | `skill-orchestrator` + `production-readiness` + `security-review` + `sqlalchemy-postgres` + 2 smart commands | ~18,132 | **80.0%** |
+
+Orchestration consistently saves **80–93%** of skill-related context tokens across common task types. The savings come from excluding skills whose domain is not touched and avoiding repeated overlap between paired skills.
+
 ### Recommended Prompt
 
 ```text
