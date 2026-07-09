@@ -92,6 +92,7 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `multi-agent-orchestration` | Design and debug multi-agent workflows with subagent decomposition, parallel execution, context isolation and error recovery |
 | `fine-tuning` | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory, covering data prep, training config, LoRA/QLoRA, evaluation and deployment |
 | `llm-observability` | Design and implement observability for LLM applications, including tracing, metrics, cost tracking, online evaluation, alerting and dashboards |
+| `prompt-engineering` | Design, test, and optimize prompts for LLMs, including system prompts, few-shot, chain-of-thought, template management, technique selection and versioning |
 
 ## Available Commands
 
@@ -121,7 +122,7 @@ Skill packs are curated groups of skills organized by role and workflow. They ar
 | `frontend-pack` | Frontend developer | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review | Next.js pages, components, UI |
 | `review-pack` | Reviewer | code-review, security-review, testing-and-debugging, production-readiness | PR review, security audit |
 | `production-pack` | DevOps / platform | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering | Deployment assessment, incident investigation |
-| `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, mcp-development, multi-agent-orchestration, fine-tuning, llm-observability | LLM apps, RAG pipelines, model serving, MCP servers, multi-agent workflows, fine-tuning, LLM observability |
+| `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, mcp-development, multi-agent-orchestration, fine-tuning, llm-observability, prompt-engineering | LLM apps, RAG pipelines, model serving, MCP servers, multi-agent workflows, fine-tuning, LLM observability, prompt engineering |
 | `fullstack-pack` | Full-stack developer | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation | End-to-end features, cross-stack debugging |
 
 ### Installation
@@ -209,6 +210,8 @@ opencode-engineering-skills/
     │   └── structured-output-reliability/
 │       └── SKILL.md
 │   ├── llm-observability/
+│   │   └── SKILL.md
+│   ├── prompt-engineering/
 │   │   └── SKILL.md
 ├── commands/
 │   ├── review.md
@@ -423,7 +426,7 @@ Available packs and their included skills:
 | `frontend` | nextjs-frontend, ui-ux-design, testing-and-debugging, code-review, security-review |
 | `review` | code-review, security-review, testing-and-debugging, production-readiness |
 | `production` | production-readiness, security-review, sqlalchemy-postgres, testing-and-debugging, token-saver, context-engineering |
-| `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, fine-tuning, mcp-development, multi-agent-orchestration, llm-observability |
+| `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, fine-tuning, mcp-development, multi-agent-orchestration, llm-observability, prompt-engineering |
 | `fullstack` | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation |
 
 Pack files in `packs/` contain detailed guidance for each pack including example prompts, best use cases, and when not to use.
@@ -633,6 +636,7 @@ rm -f ~/.config/opencode/tools/prompt_budget.ts
 | `ai-cost-optimization` | LLM costs grow unbounded; expensive models used for every request; no caching or budget enforcement | Token budgets, model routing, caching, retrieval limits, and cost gates control spend without blind quality reduction |
 | `model-serving-production` | Model serving is fragile: no fallback, no monitoring, no capacity planning, and risky deployments | Reliable APIs, cold start mitigations, circuit breakers, canary rollouts, drift monitoring, and evaluation gates ensure production safety |
 | `llm-observability` | LLM calls are invisible: you cannot trace which prompt caused which response, attribute cost, or detect quality degradation | Every LLM call is traced, cost-attributed, quality-monitored, and alerted-on without exposing raw PII |
+| `prompt-engineering` | Prompts are written ad-hoc in code, untested, unversioned, and optimized for neither cost nor quality | Prompts are versioned, tested, technique-selected, and optimized for token efficiency, latency, and output consistency |
 
 # Limitations
 

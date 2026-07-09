@@ -23,6 +23,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `multi-agent-orchestration` | New | Design multi-agent workflows with subagent decomposition, parallel execution and error recovery |
 | `fine-tuning` | New | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory, covering data prep, training config, evaluation and deployment |
 | `llm-observability` | New | Design and implement observability for LLM applications, including tracing, metrics, cost tracking, online evaluation, alerting and dashboards |
+| `prompt-engineering` | New | Design, test, and optimize prompts for LLMs, including system prompts, few-shot, chain-of-thought, template management, technique selection and versioning |
 
 ## Recommended Commands
 
@@ -43,6 +44,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 - Orchestrating multi-agent pipelines for complex engineering tasks
 - Fine-tuning a language model for domain-specific tasks
 - Observing LLM behavior in production with tracing, cost tracking, and quality monitoring
+- Designing and testing prompts systematically for consistent LLM output
 
 ## Example Prompts
 
@@ -74,6 +76,10 @@ Use ai-engineer-pack to fine-tune a Llama model on customer support conversation
 Use ai-engineer-pack to add observability to a production LLM chat service, tracing each request from prompt to response with cost attribution, latency tracking, and quality scoring.
 ```
 
+```
+Use ai-engineer-pack to design and test a system prompt for a code review assistant, selecting the right technique, writing few-shot examples, and measuring output consistency across models.
+```
+
 ## Installation
 
 ```bash
@@ -93,6 +99,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill multi-agent-orchestration \
   --skill fine-tuning \
   --skill llm-observability \
+  --skill prompt-engineering \
   --agent opencode \
   --global
 ```
@@ -120,3 +127,4 @@ chmod +x scripts/install-opencode.sh
 | `multi-agent-orchestration` | 2026-07 | Orchestrate multi-agent workflows with subagent decomposition |
 | `fine-tuning` | 2026-07 | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory |
 | `llm-observability` | 2026-07 | Monitor, trace, and alert on LLM behavior in production |
+| `prompt-engineering` | 2026-07 | Design, test, and version prompts systematically |
