@@ -19,6 +19,10 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `token-saver` | Available | Efficient reading for large AI outputs and logs |
 | `structured-output-reliability` | Available | JSON schemas, validation, retries, repair strategies, and downstream safety for LLM output |
 | `context-engineering` | Available | Structured context for multi-step AI debugging |
+| `mcp-development` | New | Build, test, debug and deploy MCP servers for tools, resources and prompts |
+| `multi-agent-orchestration` | New | Design multi-agent workflows with subagent decomposition, parallel execution and error recovery |
+| `fine-tuning` | New | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory, covering data prep, training config, evaluation and deployment |
+| `llm-observability` | New | Design and implement observability for LLM applications, including tracing, metrics, cost tracking, online evaluation, alerting and dashboards |
 
 ## Recommended Commands
 
@@ -35,6 +39,10 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 - Implementing guardrails against prompt injection
 - Evaluating model output quality with structured metrics
 - Deploying an LLM inference endpoint to production
+- Building MCP servers to expose tools and resources to AI agents
+- Orchestrating multi-agent pipelines for complex engineering tasks
+- Fine-tuning a language model for domain-specific tasks
+- Observing LLM behavior in production with tracing, cost tracking, and quality monitoring
 
 ## Example Prompts
 
@@ -48,6 +56,22 @@ Use ai-engineer-pack to debug why the LLM sometimes ignores system instructions 
 
 ```
 Use ai-engineer-pack to evaluate the quality of the generated summaries against a labeled test set.
+```
+
+```
+Use ai-engineer-pack to build an MCP server that exposes internal APIs as agent-callable tools with authentication and rate limiting.
+```
+
+```
+Use ai-engineer-pack to orchestrate a multi-agent pipeline where a researcher agent finds relevant docs, a planner agent designs the implementation, and a builder agent writes the code.
+```
+
+```
+Use ai-engineer-pack to fine-tune a Llama model on customer support conversations using LoRA, evaluate the result, and deploy the adapter to production.
+```
+
+```
+Use ai-engineer-pack to add observability to a production LLM chat service, tracing each request from prompt to response with cost attribution, latency tracking, and quality scoring.
 ```
 
 ## Installation
@@ -65,6 +89,10 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill ai-evaluation \
   --skill ai-cost-optimization \
   --skill model-serving-production \
+  --skill mcp-development \
+  --skill multi-agent-orchestration \
+  --skill fine-tuning \
+  --skill llm-observability \
   --agent opencode \
   --global
 ```
@@ -83,3 +111,12 @@ chmod +x scripts/install-opencode.sh
 - Traditional CRUD backend work without AI components (use backend-pack)
 - Frontend-only UI work (use frontend-pack)
 - Production deployment review without AI-specific concerns (use production-pack)
+
+## Recent Additions
+
+| Skill | Added | Purpose |
+|-------|-------|---------|
+| `mcp-development` | 2026-07 | Build MCP servers for agent tool access |
+| `multi-agent-orchestration` | 2026-07 | Orchestrate multi-agent workflows with subagent decomposition |
+| `fine-tuning` | 2026-07 | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory |
+| `llm-observability` | 2026-07 | Monitor, trace, and alert on LLM behavior in production |
