@@ -51,6 +51,19 @@ The five new slash commands invoke these skills directly:
 * `/plan` — create a compact implementation plan before editing.
 * `/safe-apply` — apply a planned change with verification checks.
 
+### Measured Savings
+
+Token savings measured against this repository (76 files, ~158k tokens):
+
+| Scenario | Naive Approach | Token-Saver Approach | Saved |
+|---|---|---|---|
+| Explore repo from scratch | Full directory read: ~158k tokens | `repo_map` + `prompt_budget` + 4 essential files: ~10.6k tokens | **93%** |
+| Inspect a large skill file | Full read (1,672 lines): ~7.9k tokens | `grep` + first 30 lines: ~142 tokens | **98%** |
+| Review a feature branch diff | Raw diff (28k bytes) | `diff_summarizer` summary (3.1k bytes) | **89%** |
+| Debug with long session log | Full log read (500+ lines) | `context_compressor` with error/path preservation | Varies |
+
+The `token-saver`, `context-engineering`, and `repository-navigation` skills teach the agent to achieve these savings automatically by reading selectively, using `grep`/`glob` before full reads, and keeping compact context summaries.
+
 ## Available Skills
 
 | Skill                   | Purpose                                                                                                            |
