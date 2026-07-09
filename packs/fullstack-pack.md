@@ -20,6 +20,7 @@ Engineers working across the entire stack — backend APIs, frontend UIs, databa
 | `token-saver` | Efficient reading for large full-stack investigations |
 | `context-engineering` | Structured context for multi-layer debugging |
 | `repository-navigation` | Efficient exploration of unfamiliar codebases |
+| `skill-orchestrator` | Skill selection, overlap reduction, verbosity control |
 
 ## Recommended Commands
 
@@ -33,6 +34,8 @@ Engineers working across the entire stack — backend APIs, frontend UIs, databa
 - `/context-audit` — audit context when investigating cross-stack issues
 - `/compress-context` — compress session for handoff
 - `/handoff-summary` — prepare handoff for another developer
+
+The `skill-orchestrator` skill (included in this pack) helps select the right subset of the above skills for each specific sub-task, reducing overlap and verbosity.
 
 ## Best Use Cases
 
@@ -71,8 +74,9 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill production-readiness \
   --skill token-saver \
   --skill context-engineering \
-  --skill repository-navigation \
-  --agent opencode \
+   --skill repository-navigation \
+   --skill skill-orchestrator \
+   --agent opencode \
   --global
 ```
 

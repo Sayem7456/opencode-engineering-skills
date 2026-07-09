@@ -110,6 +110,12 @@ def extract_frontmatter(path: Path) -> tuple[dict[str, Any] | None, str]:
 
 
 README_PATH = ROOT_DIR / "README.md"
+DOCS_DIR = ROOT_DIR / "docs"
+
+RECOMMENDED_DOCS = [
+    "skill-orchestration-design.md",
+    "skill-routing-matrix.md",
+]
 
 
 def _readme_section(heading: str) -> str:
@@ -639,6 +645,30 @@ def validate_repository() -> list[ValidationIssue]:
 
     issues.extend(_validate_readme_skill_table())
     issues.extend(_validate_readme_command_table())
+
+    # --------------------------------------------------
+    # Validate recommended documentation
+    # --------------------------------------------------
+
+    if DOCS_DIR.is_dir():
+        for doc_name in RECOMMENDED_DOCS:
+            doc_path = DOCS_DIR / doc_name
+            if not doc_path.is_file():
+                issues.append(
+                    ValidationIssue(
+                        "WARNING",
+                        DOCS_DIR,
+                        f"Recommended documentation '{doc_name}' is missing.",
+                    )
+                )
+    else:
+        issues.append(
+            ValidationIssue(
+                "WARNING",
+                DOCS_DIR,
+                "Docs directory does not exist.",
+            )
+        )
 
     return issues
 

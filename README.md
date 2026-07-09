@@ -54,6 +54,7 @@ The five new slash commands invoke these skills directly:
 | `token-saver`           | Selective file reading, lazy context loading, compact reporting, and avoiding unnecessary output                   |
 | `context-engineering`   | Build, compress, and reuse task context across sessions without losing decisions or verification state             |
 | `repository-navigation` | Efficient repository exploration, repo map building, caller tracing, and skipping generated files                  |
+| `skill-orchestrator` | Select the right lead skill and supporting skills, reduce overlap, control verbosity, and avoid unnecessary activation |
 | `structured-output-reliability` | JSON schemas, validation, retries, repair strategies, contracts, and downstream safety for LLM structured output |
 | `llm-app-security` | Review and harden LLM apps against prompt injection, data leakage, unsafe tool use, insecure retrieval and untrusted output |
 | `prompt-injection-defense` | Design, review and implement defenses against direct and indirect prompt injection in LLM applications |
@@ -71,6 +72,9 @@ The five new slash commands invoke these skills directly:
 | `/debug`             | Investigate a bug and identify its root cause                                  |
 | `/implement`         | Implement a new feature using existing project conventions                     |
 | `/refactor`          | Refactor existing code while preserving observable behavior                    |
+| `/choose-skills`     | Select the best lead and supporting skills while avoiding overlapping instructions |
+| `/smart-review`      | Review code with one lead review skill and only necessary supporting skills    |
+| `/smart-fix`         | Fix a bug using minimum necessary skills and focused verification              |
 | `/compress-context`  | Compress the current session context into a concise working summary            |
 | `/context-audit`     | Audit the current session for wasted context and missing information           |
 | `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              |
@@ -577,6 +581,12 @@ context-engineering
 repository-navigation
 ```
 
+For skill selection and overlap reduction at task start:
+
+```text
+skill-orchestrator
+```
+
 You can explicitly name skills in your prompt when you want deterministic selection.
 
 # Benefits
@@ -768,8 +778,14 @@ For example:
 * `fastapi-backend` and `sqlalchemy-postgres`
 * `code-review` and `security-review`
 * `nextjs-frontend` and `ui-ux-design`
+* `production-readiness` and `security-review`
+* `token-saver` and `context-engineering`
 
 Too many simultaneously active skills may make the agent overly cautious or verbose.
+
+The `skill-orchestrator` skill provides a routing model that reduces overlap: it assigns one lead skill per task, scopes supporting skills to their specialties, and activates guardrails (like `security-review`) only when the task touches sensitive areas. See `docs/skill-orchestration-design.md` for the full model and task-category routing tables.
+
+The `/choose-skills`, `/smart-review`, and `/smart-fix` commands automate this orchestration for common task types. See `docs/skill-routing-matrix.md` for a quick-reference task-to-skill routing table with verification depth and exclusion guidance.
 
 ## 4. Repository Conventions Still Matter
 
@@ -814,6 +830,66 @@ A tiny change may not require:
 * the entire test suite
 
 Use judgment and keep verification proportional to risk.
+
+## Overlap Mitigation
+
+Some skills intentionally overlap (`python-quality` and `testing-and-debugging`, `fastapi-backend` and `sqlalchemy-postgres`, `code-review` and `security-review`, `nextjs-frontend` and `ui-ux-design`, and others). Activating all of them for every task duplicates instructions, wastes context, and produces overly cautious or verbose output.
+
+This package mitigates overlap — it does not eliminate it entirely. Skill files retain overlapping guidance so each skill is useful independently. The mitigation works through the following mechanisms:
+
+### skill-orchestrator
+
+The `skill-orchestrator` skill assigns one lead skill per task and limits supporting skills to their specialized domains. It defines guardrails that activate only when the task justifies them (e.g., `security-review` only for security-sensitive changes).
+
+### Smart Commands
+
+These commands apply the orchestration model automatically:
+
+| Command | Purpose |
+|---------|---------|
+| `/choose-skills` | Classify a task and produce a skill plan before starting work |
+| `/smart-review` | Choose a review type and lead skill, then review with only the necessary supporting skills |
+| `/smart-fix` | Choose a lead skill and stack support, then fix with focused verification |
+
+### Reduction Rules
+
+Overlap is reduced by:
+
+- **Lead / support / guardrail model** — exactly one lead defines the workflow; support fills domain gaps; guardrails add checklist items only when triggered
+- **Scoped supporting skills** — a support skill contributes only the sections its lead does not cover; it is excluded entirely when its domain is untouched
+- **Explicit excluded skills** — each task's skill plan lists skills intentionally not used, preventing accidental activation
+- **Verbosity control** — output is `concise` or `standard` by default; `detailed` only for reviews, security, production, or user request
+- **Verification depth control** — verification is `focused` or `module` for most tasks; `full` only for production releases
+
+### Examples
+
+**Bad — activates too many skills for a small bug fix:**
+
+```text
+Use python-quality, testing-and-debugging, fastapi-backend,
+sqlalchemy-postgres, code-review, security-review,
+and production-readiness to fix this small bug.
+```
+
+Nine skills activated. Most add no value: `production-readiness` is irrelevant for a bug fix, `code-review` duplicates `testing-and-debugging` on finding format, `python-quality` overlaps with `fastapi-backend` on error handling.
+
+**Better — uses skill-orchestrator to scope skills:**
+
+```text
+Use skill-orchestrator. Lead: testing-and-debugging.
+Support: sqlalchemy-postgres. Guardrail: security-review
+only if data exposure is found.
+```
+
+Three skills plus a conditional guardrail. The lead drives the fix workflow; the support adds database-specific guidance; the guardrail activates only if the bug reveals sensitive data.
+
+### Recommended Prompt
+
+```text
+Use skill-orchestrator first. Select one lead skill, limited
+support skills, and excluded skills. Then fix the issue
+with focused verification.
+```
 
 # Recommended Skill Combinations
 
@@ -1056,47 +1132,6 @@ Tasks:
 7. Propose the smallest safe fix and regression test.
 
 Do not present an unverified hypothesis as a confirmed cause.
-```
-
-## Fix a Bug
-
-```text
-Fix this issue using:
-
-- testing-and-debugging
-- python-quality
-- relevant stack-specific skills
-
-Workflow:
-
-1. Reproduce the failure.
-2. Identify and confirm the root cause.
-3. Add or update a focused regression test.
-4. Apply the smallest safe change.
-5. Run the focused test.
-6. Run relevant lint, type, and broader tests.
-
-Do not:
-
-- rewrite unrelated code
-- weaken validation
-- weaken types
-- add arbitrary sleeps
-- add retries without checking idempotency
-- hide errors with broad exception handling
-- claim success without verification
-
-At the end, report:
-
-- root cause
-- files changed
-- fix applied
-- regression test
-- commands run
-- remaining limitations
-
-Issue:
-[Describe the issue.]
 ```
 
 ## Fix a SQLAlchemy Connection Failure

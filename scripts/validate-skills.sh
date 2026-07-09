@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_DIR="$ROOT/skills"
 COMMANDS_DIR="$ROOT/commands"
+DOCS_DIR="$ROOT/docs"
 
 failed=0
 
@@ -260,6 +261,27 @@ if [[ -d "$COMMANDS_DIR" ]]; then
     done
 else
     echo "  Commands directory not found."
+    echo ""
+fi
+
+# --------------------------------------------------
+# Validate recommended documentation
+# --------------------------------------------------
+
+echo "=== Validating documentation ==="
+echo ""
+
+if [[ -d "$DOCS_DIR" ]]; then
+    for doc_name in "skill-orchestration-design.md" "skill-routing-matrix.md"; do
+        doc_path="$DOCS_DIR/$doc_name"
+        echo "Checking $doc_name..."
+        if [[ ! -f "$doc_path" ]]; then
+            echo "  WARNING: Recommended documentation '$doc_name' is missing"
+        fi
+        echo ""
+    done
+else
+    echo "  WARNING: Docs directory does not exist."
     echo ""
 fi
 

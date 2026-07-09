@@ -4,6 +4,26 @@ description: Fix a confirmed defect and add regression coverage
 
 Fix the requested issue using the relevant global skills.
 
+## Overlap control
+
+1. Start with `skill-orchestrator` when task scope is broad or ambiguous.
+2. Select exactly one lead skill (normally `testing-and-debugging`).
+3. Use supporting skills only for specialized checks.
+4. Do not activate `security-review` unless the task touches security-sensitive areas.
+5. Do not activate `production-readiness` unless the task affects deployment, config, migrations, reliability, or release.
+6. Do not activate `ui-ux-design` unless user-facing UI/UX is involved.
+7. Do not activate `sqlalchemy-postgres` unless database, session, migration, or query code is involved.
+8. Do not repeat generic advice from multiple skills.
+9. Keep output proportional to task risk.
+10. Prefer concise findings over broad checklists.
+
+Skill selection:
+- Lead:
+- Support:
+- Guardrail:
+- Excluded:
+- Reason:
+
 Workflow:
 
 1. Inspect the relevant execution path.

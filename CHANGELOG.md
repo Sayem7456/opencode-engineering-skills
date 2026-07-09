@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.2.0 (2026-07-09)
+
+### Added
+
+- `skill-orchestrator` — lead/support/guardrail skill selection model with verbosity and verification depth control
+- `docs/skill-orchestration-design.md` — full orchestration model, overlapping-pair resolution, 11 task categories
+- `docs/skill-routing-matrix.md` — quick-reference task-to-skill routing table with 13 task types
+- 3 new slash commands:
+  - `/choose-skills` — produce a skill plan before starting work
+  - `/smart-review` — review with one lead skill and scoped supporting skills
+  - `/smart-fix` — fix with minimum necessary skills and focused verification
+- Overlap control sections added to 7 existing commands (`review`, `fix`, `debug`, `implement`, `refactor`, `plan`, `safe-apply`)
+
+### Changed
+
+- `README.md` — added Overlap Mitigation section, updated Limitations, linked to skill-routing-matrix, added `/choose-skills`/`/smart-review`/`/smart-fix` to command table
+- `packs/fullstack-pack.md` — added `skill-orchestrator` to included skills and installation command
+- `tests/validate_skills.py` — added recommended documentation validation (WARNING if missing)
+- `scripts/validate-skills.sh` — added documentation validation section
+- Removed duplicate "Fix a Bug" example prompt from README
+
 ## 1.1.0 (2026-07-08)
 
 ### Added
