@@ -591,118 +591,17 @@ You can explicitly name skills in your prompt when you want deterministic select
 
 # Benefits
 
-## 1. Consistent Engineering Standards
-
-Without reusable skills, coding behavior may vary between sessions, models, and projects.
-
-With skills, OpenCode receives consistent guidance about:
-
-* typing
-* validation
-* error handling
-* transactions
-* authorization
-* testing
-* accessibility
-* security
-* production safety
-
-## 2. Less Prompt Repetition
-
-Instead of repeatedly writing long requirements, you can reference the appropriate skills:
-
-```text
-Use fastapi-backend, sqlalchemy-postgres, and testing-and-debugging to fix this endpoint.
-```
-
-## 3. Better Root-Cause Analysis
-
-The debugging skill encourages OpenCode to:
-
-1. Reproduce the failure.
-2. Identify the smallest failing path.
-3. Separate symptoms from root causes.
-4. Confirm the cause with evidence.
-5. Add regression coverage.
-6. Apply the smallest safe fix.
-7. Verify the result.
-
-This reduces superficial fixes that only hide symptoms.
-
-## 4. Safer Database Changes
-
-The SQLAlchemy and PostgreSQL skill emphasizes:
-
-* correct session lifecycle
-* rollback after failure
-* explicit transaction ownership
-* fresh sessions for retries
-* idempotency
-* concurrency safety
-* migration safety
-* realistic connection-pool sizing
-
-## 5. Better Code Reviews
-
-The code-review skill prioritizes:
-
-* correctness
-* security
-* data integrity
-* concurrency
-* API compatibility
-* realistic regressions
-
-It discourages low-value comments based only on personal style.
-
-## 6. Better Frontend Quality
-
-The Next.js and UI/UX skills encourage:
-
-* correct server/client boundaries
-* complete loading and error states
-* responsive design
-* runtime validation
-* accessibility
-* clear visual hierarchy
-* safe caching
-* usable forms
-
-## 7. Better Production Readiness
-
-The production-readiness skill checks more than whether tests pass.
-
-It also considers:
-
-* environment configuration
-* deployment order
-* database migrations
-* health checks
-* observability
-* rollback
-* background workers
-* capacity
-* failure handling
-
-## 8. Token Efficiency
-
-The `token-saver`, `context-engineering`, and `repository-navigation` skills reduce token waste by:
-
-* reading only relevant sections of files instead of entire files
-* using grep and glob before reading
-* avoiding full-file dumps in responses
-* maintaining a compact context model instead of repeating information
-* summarizing logs instead of reproducing them
-* skipping generated and transient files
-* compressing context for handoff between sessions
-
-These are behavioral improvements, not automated tooling. The agent still reads what it needs for correctness — it simply avoids reading and repeating what it does not need.
-
-## 9. Reusable Across Projects
-
-The global installation makes the same skills available across multiple repositories without copying instructions into each project.
-
-Project-specific rules can still be defined separately in the project’s own `AGENTS.md`.
+| Benefit | What It Means |
+|---------|---------------|
+| Consistent standards | Skills enforce typing, validation, error handling, transactions, auth, testing, accessibility, security, and production safety across sessions |
+| Less prompt repetition | Name a skill instead of writing long requirements: `Use fastapi-backend, sqlalchemy-postgres, and testing-and-debugging` |
+| Root-cause analysis | Reproduce, separate symptom from cause, confirm with evidence, apply smallest fix, verify |
+| Safer database changes | Correct session lifecycle, rollback, explicit transactions, idempotency, concurrency safety, migration safety |
+| Better code reviews | Focus on correctness, security, data integrity, API compatibility, regressions — not personal style |
+| Better frontend quality | Server/client boundaries, loading/error states, responsive design, runtime validation, accessibility |
+| Production readiness | Configuration, migrations, health checks, observability, rollback, capacity, failure handling |
+| Token efficiency | Selective reads, grep before reading, no full-file dumps, compact reporting, skip generated files |
+| Reusable across projects | Global installation works with any repo; project-specific rules stay in `AGENTS.md` |
 
 # Practical Difference by Skill
 
@@ -727,21 +626,6 @@ Project-specific rules can still be defined separately in the project’s own `A
 | `ai-evaluation` | Evaluation is ad-hoc, unlabeled, or uses LLM judges without calibration; regressions go undetected | Golden test sets, calibrated judges, inter-rater reliability, statistical comparison, and CI gates produce trustworthy quality signals |
 | `ai-cost-optimization` | LLM costs grow unbounded; expensive models used for every request; no caching or budget enforcement | Token budgets, model routing, caching, retrieval limits, and cost gates control spend without blind quality reduction |
 | `model-serving-production` | Model serving is fragile: no fallback, no monitoring, no capacity planning, and risky deployments | Reliable APIs, cold start mitigations, circuit breakers, canary rollouts, drift monitoring, and evaluation gates ensure production safety |
-
-# Advantages
-
-* Reusable across multiple projects
-* Reduces repeated prompt instructions
-* Encourages evidence-based debugging
-* Encourages focused regression tests
-* Improves database and transaction safety
-* Improves security review consistency
-* Improves frontend accessibility and state handling
-* Encourages smaller and more reviewable changes
-* Provides structured code-review output
-* Encourages production verification
-* Works well with OpenCode’s built-in repository and shell tools
-* Can be versioned and updated through Git
 
 # Limitations and Disadvantages
 
@@ -908,563 +792,54 @@ support skills, and excluded skills. Then fix the issue
 with focused verification.
 ```
 
-# Recommended Skill Combinations
+# Beginner Quickstart
 
-## Python Bug Fix
-
-```text
-python-quality
-testing-and-debugging
-```
-
-## FastAPI Endpoint
+Use `/choose-skills` to start any task. It produces a skill plan with the right lead, support, and guardrail skills — no need to memorize combinations.
 
 ```text
-python-quality
-fastapi-backend
-testing-and-debugging
+/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.
 ```
-
-## FastAPI Database Issue
 
 ```text
-fastapi-backend
-sqlalchemy-postgres
-testing-and-debugging
+/choose-skills Fix the null pointer exception in the payment processing service.
 ```
-
-## Next.js Feature
 
 ```text
-nextjs-frontend
-ui-ux-design
-testing-and-debugging
+/choose-skills Review the pull request adding a new user roles feature.
 ```
-
-## Pull Request Review
 
 ```text
-code-review
-security-review
+/choose-skills Implement an export-to-CSV endpoint for the analytics dashboard.
 ```
-
-## Refactoring
 
 ```text
-code-review
-testing-and-debugging
-relevant stack-specific skill
+/choose-skills Refactor the assignment scoring logic into a separate service.
 ```
 
-## Pre-Deployment Assessment
+After the skill plan is approved, use `/smart-fix`, `/smart-review`, or continue with standard commands:
 
 ```text
-production-readiness
-security-review
-testing-and-debugging
+/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.
 ```
-
-## Large Bug Investigation (Token-Aware)
 
 ```text
-token-saver
-context-engineering
-repository-navigation
-testing-and-debugging
-relevant stack-specific skill
+/smart-review src/routes/users.py
 ```
 
-## Large Refactor (Token-Aware)
-
-```text
-token-saver
-context-engineering
-repository-navigation
-code-review
-testing-and-debugging
-relevant stack-specific skill
-```
-
-## SQLAlchemy Production Issue (Token-Aware)
-
-```text
-token-saver
-context-engineering
-sqlalchemy-postgres
-fastapi-backend
-testing-and-debugging
-```
-
-## Next.js Dashboard Redesign (Token-Aware)
-
-```text
-token-saver
-context-engineering
-repository-navigation
-nextjs-frontend
-ui-ux-design
-testing-and-debugging
-```
-
-## Pre-Deployment Review with Context Audit
-
-```text
-production-readiness
-security-review
-testing-and-debugging
-token-saver
-context-engineering
-```
-
-# Example Prompts
-
-## Review Python Code
-
-```text
-Review this Python module using:
-
-- python-quality
-- code-review
-- security-review
-- testing-and-debugging
-
-Inspect related callers and tests before reporting findings.
-
-Focus on:
-
-- correctness
-- typing
-- error handling
-- resource cleanup
-- security
-- edge cases
-- missing regression coverage
-
-For each finding, provide:
-
-- severity
-- file and line
-- evidence
-- realistic impact
-- smallest safe fix
-- regression-test recommendation
-
-Do not modify the code.
-Do not report style-only issues.
-
-Target:
-src/services/document_processor.py
-```
-
-## Review FastAPI and SQLAlchemy Code
-
-```text
-Review this feature using:
-
-- fastapi-backend
-- sqlalchemy-postgres
-- code-review
-- security-review
-
-Check:
-
-- request and response validation
-- authentication
-- object-level authorization
-- database session lifecycle
-- rollback and commit behavior
-- transaction ownership
-- duplicate requests
-- concurrency
-- tenant or branch isolation
-- background task safety
-- API compatibility
-- error handling
-
-Inspect related routes, services, schemas, models, migrations, and tests.
-
-Do not edit files.
-Return only evidence-based findings.
-```
-
-## Review a Next.js Page
-
-```text
-Review this page using:
-
-- nextjs-frontend
-- ui-ux-design
-- code-review
-- security-review
-
-Check:
-
-- Server and Client Component boundaries
-- data fetching
-- caching
-- runtime validation
-- authentication and authorization
-- loading, empty, error, and unauthorized states
-- responsive behavior
-- accessibility
-- duplicate submission
-- frontend and backend contract mismatches
-- secret exposure
-
-Do not redesign the page unnecessarily.
-Report findings by severity with exact file locations.
-
-Target:
-app/dashboard/students/page.tsx
-```
-
-## Find a Bug
-
-```text
-Investigate this bug using:
-
-- testing-and-debugging
-- relevant stack-specific skills
-
-Reported behavior:
-[Describe the problem.]
-
-Expected behavior:
-[Describe the expected result.]
-
-Actual behavior:
-[Describe the actual result.]
-
-Relevant error or logs:
-[Paste the error.]
-
-Tasks:
-
-1. Trace the complete execution path.
-2. Reproduce the smallest failing case.
-3. Separate symptom, trigger, root cause, and contributing conditions.
-4. Inspect callers, state changes, database operations, and error handling.
-5. Confirm the root cause with evidence.
-6. Do not modify code until sufficient evidence is available.
-7. Propose the smallest safe fix and regression test.
-
-Do not present an unverified hypothesis as a confirmed cause.
-```
-
-## Fix a SQLAlchemy Connection Failure
-
-```text
-Fix this FastAPI and SQLAlchemy connection issue using:
-
-- fastapi-backend
-- sqlalchemy-postgres
-- testing-and-debugging
-- python-quality
-
-Pay special attention to:
-
-- failed session state
-- rollback
-- session replacement
-- transaction boundaries
-- ambiguous commit outcomes
-- idempotency
-- duplicate processing
-- request-scoped sessions passed to background tasks
-- connection-pool behavior
-
-Do not solve the problem only by increasing pool size or adding retries.
-
-A retry must use a fresh session and must only be added when the operation is safe to retry.
-
-Add focused regression coverage and run the relevant tests.
-```
-
-## Implement a FastAPI Feature
-
-```text
-Implement this feature using:
-
-- fastapi-backend
-- sqlalchemy-postgres
-- python-quality
-- testing-and-debugging
-- security-review
-
-Feature:
-[Describe the feature.]
-
-Required API:
-
-- endpoint:
-- method:
-- request schema:
-- response schema:
-- permissions:
-- database changes:
-- background processing:
-- expected failures:
-
-Requirements:
-
-- inspect the existing architecture first
-- follow existing repository conventions
-- keep route handlers thin
-- use explicit request and response schemas
-- enforce object-level authorization
-- make transaction ownership explicit
-- add database constraints for critical invariants
-- make duplicate requests safe
-- create migrations when required
-- add API and service tests
-- update documentation where necessary
-
-Do not pass request-scoped sessions into background jobs.
-Do not expose raw database or provider errors.
-
-Run focused tests, lint, type checks, and relevant broader checks.
-```
-
-## Implement a Next.js Feature
-
-```text
-Implement this feature using:
-
-- nextjs-frontend
-- ui-ux-design
-- testing-and-debugging
-- security-review
-
-Feature:
-[Describe the feature.]
-
-User flow:
-
-1. [First step]
-2. [Second step]
-3. [Completion step]
-
-Requirements:
-
-- inspect the existing design system and architecture
-- follow the current App Router or Pages Router structure
-- prefer Server Components unless interactivity requires a Client Component
-- validate API and form data at runtime
-- implement loading, empty, error, unauthorized, and success states
-- make the interface responsive
-- preserve keyboard accessibility
-- prevent duplicate form submission
-- do not expose server secrets
-- verify caching for user-specific data
-- reuse existing components and design tokens
-
-Add tests for the critical flow.
-
-Run lint, type checking, focused tests, and the production build.
-```
-
-## Refactor an Existing Feature
-
-```text
-Refactor this feature using:
-
-- code-review
-- testing-and-debugging
-- relevant stack-specific skills
-
-Target:
-[Feature or files]
-
-Refactoring goals:
-
-- improve clarity
-- remove proven duplication
-- improve testability
-- improve structure
-
-Constraints:
-
-- preserve observable behavior
-- preserve API contracts
-- preserve database behavior
-- preserve permissions
-- do not introduce unnecessary dependencies
-- do not change unrelated modules
-- keep the patch reviewable
-
-Workflow:
-
-1. Inspect all callers and consumers.
-2. Identify the existing public contract.
-3. Add or confirm characterization tests.
-4. Refactor in small steps.
-5. Run focused tests after meaningful changes.
-6. Run broader checks at completion.
-
-Report:
-
-- reason for the refactor
-- structural changes
-- behavior preserved
-- tests and checks run
-- remaining technical debt
-```
-
-## Perform a Security Review
-
-```text
-Review this feature using:
-
-- security-review
-- code-review
-- relevant stack-specific skills
-
-Check:
-
-- authentication
-- object-level authorization
-- tenant isolation
-- input validation
-- SQL injection
-- command injection
-- path traversal
-- SSRF
-- unsafe file uploads
-- secrets
-- sensitive logging
-- CORS and CSRF
-- token handling
-- rate limiting
-- duplicate requests
-- unsafe background processing
-- untrusted LLM output
-
-Report confirmed findings separately from items requiring verification.
-
-Do not modify files.
-Do not expose real secret values.
-Do not inflate severity.
-```
-
-## Assess Production Readiness
-
-```text
-Assess this application using:
-
-- production-readiness
-- security-review
-- testing-and-debugging
-
-Review:
-
-- production configuration
-- required environment variables
-- build and tests
-- authentication and authorization
-- database migrations
-- connection-pool sizing
-- background workers
-- health and readiness checks
-- logging and observability
-- external service timeouts
-- retries and idempotency
-- resource limits
-- deployment sequence
-- rollback sequence
-
-Classify the release as:
-
-- Ready
-- Conditionally ready
-- Not ready
-- Unable to determine
-
-Separate release blockers from recommended improvements.
-
-Do not deploy or run production migrations automatically.
-```
-
-## Compress Session Context
-
-```text
-Compress the current context using token-saver and context-engineering.
-
-Preserve:
-- task goal and constraints
-- exact errors and file paths
-- files changed and inspected
-- commands run and exit status
-- decisions made
-- verification status
-- remaining risks
-
-Remove:
-- irrelevant exploration
-- repeated log patterns
-- redundant explanations
-
-Return a compressed summary.
-```
-
-## Audit Context Waste
-
-```text
-Audit the current session for context waste using token-saver and context-engineering.
-
-Identify:
-- irrelevant files read
-- oversized logs or full-file dumps
-- repeated outputs
-- stale assumptions
-- missing critical context
-
-Return waste items with estimated impact and next minimal reads.
-```
-
-## Create Handoff Summary
-
-```text
-Create a handoff summary using context-engineering for continuing in a new session.
-
-Include:
-- goal and current state
-- files changed and important facts
-- commands run and test results
-- next steps and warnings
-
-Do not assume prior knowledge.
-```
-
-## Plan Before Implementation
-
-```text
-Create a compact implementation plan using repository-navigation and the relevant stack skills.
-
-Include:
-- scope
-- files likely affected
-- risks
-- tests to add or update
-- validation commands
-- rollback considerations
-
-Do not start editing until the plan is approved.
-```
-
-## Safe Apply After a Plan
-
-```text
-Apply the planned change safely using testing-and-debugging.
-
-Requirements:
-- inspect the diff first
-- make minimal changes
-- add or update tests
-- run focused verification
-- report results
-
-If verification fails, stop and report without applying speculative fixes.
-```
+# Example Prompts Reference
+
+Each command file contains its own detailed prompt. Use these as quick starters.
+
+| Command | Usage |
+|---------|-------|
+| `/review` | Review code without modifying it |
+| `/debug` | Investigate a bug's root cause |
+| `/fix` | Fix a confirmed defect with regression coverage |
+| `/implement` | Build a new feature following project conventions |
+| `/refactor` | Restructure code preserving observable behavior |
+| `/choose-skills` | Generate a skill plan before starting work |
+| `/smart-review` | Review with one lead skill and scoped support |
+| `/smart-fix` | Fix with minimum skills and focused verification |
 
 # Slash Command Examples
 
@@ -1496,6 +871,24 @@ If verification fails, stop and report without applying speculative fixes.
 
 ```text
 /refactor Refactor the assignment generation routes so business logic is moved into the service layer without changing the API contract.
+```
+
+## Choose Skills
+
+```text
+/choose-skills Review the pull request adding a new user roles feature.
+```
+
+## Smart Review
+
+```text
+/smart-review src/routes/users.py
+```
+
+## Smart Fix
+
+```text
+/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.
 ```
 
 ## Compress Context
