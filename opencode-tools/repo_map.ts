@@ -1,64 +1,61 @@
-import { tool } from "@opencode-ai/plugin";
-import { execFile } from "child_process";
-import { fileURLToPath } from "url";
-import { dirname, resolve, sep } from "path";
-import { existsSync } from "fs";
+import { tool } from "@opencode-ai/plugin"
+import { execFile } from "node:child_process"
+import { fileURLToPath } from "node:url"
+import path from "node:path"
+import fs from "node:fs"
+import { promisify } from "node:util"
 
-/**
- * Walk up from the installed tool's real path to find the repository root
- * containing tools/<scriptName>. Handles symlinked installations.
- */
-function resolveScriptPath(scriptName: string): string {
-  const currentFile = fileURLToPath(import.meta.url);
-  let dir = resolve(dirname(currentFile));
-  const parts = dir.split(sep);
-  for (let i = parts.length; i > 1; i--) {
-    const candidate = parts.slice(0, i).join(sep);
-    const scriptPath = resolve(candidate, "tools", scriptName);
-    if (existsSync(scriptPath)) {
-      return scriptPath;
-    }
+const execFileAsync = promisify(execFile)
+
+function findRepoRoot(startDir: string): string | null {
+  let current = startDir
+  while (true) {
+    const candidate = path.join(current, "tools", "repo_map.py")
+    if (fs.existsSync(candidate)) return current
+    const parent = path.dirname(current)
+    if (parent === current) return null
+    current = parent
   }
-  return "";
 }
 
 export default tool({
-  description:
-    "Generate a compact repository map showing languages, frameworks, config files, backend/frontend/db/test groupings, and suggested next reads.",
+  description: "Generate a compact repository map to reduce unnecessary context loading.",
   args: {
-    path: tool.schema
-      .string()
-      .default(".")
-      .describe("Repository path (default: current directory)"),
-    maxFiles: tool.schema
-      .number()
-      .optional()
-      .describe("Maximum files to list per category (default: 300)"),
+    path: tool.schema.string().optional().describe("Repository path to inspect."),
+    maxFiles: tool.schema.number().optional().describe("Maximum number of files to inspect."),
   },
   async execute(args) {
-    const scriptPath = resolveScriptPath("repo_map.py");
-    if (!scriptPath) {
-      return "ERROR: Could not locate tools/repo_map.py. Reinstall the package using scripts/install-opencode.sh.";
+    const currentFile = fileURLToPath(import.meta.url)
+    const currentDir = path.dirname(currentFile)
+    const repoRoot = findRepoRoot(currentDir)
+    if (!repoRoot) {
+      return [
+        "Tool configuration error:",
+        "Could not locate tools/repo_map.py.",
+        "Reinstall using scripts/install-opencode.sh.",
+      ].join("\n")
     }
 
-    const cliArgs = [scriptPath, args.path];
+    const script = path.join(repoRoot, "tools", "repo_map.py")
+    const repositoryPath = args.path ?? "."
+    const commandArgs = [script, repositoryPath]
+
     if (args.maxFiles !== undefined) {
-      cliArgs.push("--max-files", String(args.maxFiles));
+      commandArgs.push("--max-files", String(args.maxFiles))
     }
 
-    return new Promise<string>((resolvePromise) => {
-      execFile("python3", cliArgs, { timeout: 30000 }, (error, stdout, stderr) => {
-        if (error) {
-          if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-            resolvePromise("ERROR: Python not found. Install python3.");
-          } else {
-            const msg = stderr.trim() || error.message;
-            resolvePromise(`ERROR: repo_map.py failed: ${msg}`);
-          }
-          return;
-        }
-        resolvePromise(stdout.trimEnd());
-      });
-    });
+    try {
+      const result = await execFileAsync("python3", commandArgs, {
+        cwd: repositoryPath,
+        maxBuffer: 1024 * 1024 * 4,
+      })
+      return result.stdout || "No output."
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const msg = error.message
+        return `repo_map tool failed: ${msg}`
+      }
+      return "repo_map tool failed with an unknown error."
+    }
   },
-});
+})

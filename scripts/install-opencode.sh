@@ -123,15 +123,7 @@ if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
         tool_name="${tool_filename%.ts}"
         target="$TOOLS_TARGET_DIR/$tool_filename"
 
-        if [[ -L "$target" ]]; then
-            echo "Replacing existing symlink: $tool_name"
-            rm "$target"
-        elif [[ -e "$target" ]]; then
-            echo "Warning: $tool_name already exists and is not a symlink. Skipping."
-            continue
-        fi
-
-        ln -s "$tool_file" "$target"
+        cp "$tool_file" "$target"
 
         echo "Installed tool: $tool_name"
         installed_tools=$((installed_tools + 1))
@@ -159,5 +151,15 @@ echo "$DOCS_TARGET_DIR"
 echo
 echo "Tools location:"
 echo "$TOOLS_TARGET_DIR"
+echo
+echo
+echo "Custom tools installed. Run this smoke test to verify:"
+echo
+echo '  opencode run "Say hello"'
+echo
+echo "If OpenCode returns an unexpected server error,"
+echo "temporarily disable tools with:"
+echo
+echo "  mv ~/.config/opencode/tools ~/.config/opencode/tools.disabled"
 echo
 echo "Restart OpenCode or open a new session."

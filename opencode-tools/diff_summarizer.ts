@@ -1,106 +1,63 @@
-import { tool } from "@opencode-ai/plugin";
-import { execFile } from "child_process";
-import { fileURLToPath } from "url";
-import { dirname, resolve, sep } from "path";
-import { existsSync } from "fs";
+import { tool } from "@opencode-ai/plugin"
+import { execFile } from "node:child_process"
+import { fileURLToPath } from "node:url"
+import path from "node:path"
+import fs from "node:fs"
+import { promisify } from "node:util"
 
-/**
- * Walk up from the installed tool's real path to find the repository root
- * containing tools/<scriptName>. Handles symlinked installations.
- */
-function resolveScriptPath(scriptName: string): string {
-  const currentFile = fileURLToPath(import.meta.url);
-  let dir = resolve(dirname(currentFile));
-  const parts = dir.split(sep);
-  for (let i = parts.length; i > 1; i--) {
-    const candidate = parts.slice(0, i).join(sep);
-    const scriptPath = resolve(candidate, "tools", scriptName);
-    if (existsSync(scriptPath)) {
-      return scriptPath;
-    }
+const execFileAsync = promisify(execFile)
+
+function findRepoRoot(startDir: string): string | null {
+  let current = startDir
+  while (true) {
+    const candidate = path.join(current, "tools", "diff_summarizer.py")
+    if (fs.existsSync(candidate)) return current
+    const parent = path.dirname(current)
+    if (parent === current) return null
+    current = parent
   }
-  return "";
 }
 
 export default tool({
-  description:
-    "Summarize a git diff with per-file analysis: line counts, risk category, detected symbols, suggested skills, and suggested test commands.",
+  description: "Summarize a git diff with per-file analysis: line counts, risk category, detected symbols, suggested skills, and suggested test commands.",
   args: {
-    path: tool.schema
-      .string()
-      .optional()
-      .describe("Working directory to run git diff in (default: current directory)"),
-    diffFile: tool.schema
-      .string()
-      .optional()
-      .describe("Path to an existing diff file to analyze"),
-    useStdinText: tool.schema
-      .string()
-      .optional()
-      .describe("Inline diff text to analyze (passed via stdin to Python script)"),
+    path: tool.schema.string().optional().describe("Working directory to run git diff in (default: current directory)."),
+    diffFile: tool.schema.string().optional().describe("Path to an existing diff file to analyze."),
+    useStdinText: tool.schema.string().optional().describe("Inline diff text to analyze (passed via stdin)."),
   },
   async execute(args) {
-    const scriptPath = resolveScriptPath("diff_summarizer.py");
-    if (!scriptPath) {
-      return "ERROR: Could not locate tools/diff_summarizer.py. Reinstall the package using scripts/install-opencode.sh.";
+    const currentFile = fileURLToPath(import.meta.url)
+    const currentDir = path.dirname(currentFile)
+    const repoRoot = findRepoRoot(currentDir)
+    if (!repoRoot) {
+      return [
+        "Tool configuration error:",
+        "Could not locate tools/diff_summarizer.py.",
+        "Reinstall using scripts/install-opencode.sh.",
+      ].join("\n")
     }
 
-    if (args.useStdinText !== undefined) {
-      const cliArgs = [scriptPath, "--stdin"];
-      return new Promise<string>((resolvePromise) => {
-        const proc = execFile("python3", cliArgs, { timeout: 30000 }, (error, stdout, stderr) => {
-          if (error) {
-            if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-              resolvePromise("ERROR: Python not found. Install python3.");
-            } else {
-              const msg = stderr.trim() || error.message;
-              resolvePromise(`ERROR: diff_summarizer.py failed: ${msg}`);
-            }
-            return;
-          }
-          resolvePromise(stdout.trimEnd());
-        });
-        if (proc.stdin) {
-          proc.stdin.write(args.useStdinText);
-          proc.stdin.end();
-        }
-      });
-    }
+    const script = path.join(repoRoot, "tools", "diff_summarizer.py")
 
-    if (args.diffFile !== undefined) {
-      const cliArgs = [scriptPath, "--file", args.diffFile];
-      return new Promise<string>((resolvePromise) => {
-        execFile("python3", cliArgs, { timeout: 30000 }, (error, stdout, stderr) => {
-          if (error) {
-            if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-              resolvePromise("ERROR: Python not found. Install python3.");
-            } else {
-              const msg = stderr.trim() || error.message;
-              resolvePromise(`ERROR: diff_summarizer.py failed: ${msg}`);
-            }
-            return;
-          }
-          resolvePromise(stdout.trimEnd());
-        });
-      });
-    }
+    try {
+      if (args.diffFile) {
+        const result = await execFileAsync("python3", [script, "--file", args.diffFile], { maxBuffer: 1024 * 1024 * 4 })
+        return result.stdout || "No output."
+      }
 
-    // Default: run git diff in the specified or current directory
-    const cwd = args.path ?? ".";
-    const cliArgs = [scriptPath];
-    return new Promise<string>((resolvePromise) => {
-      execFile("python3", cliArgs, { cwd, timeout: 30000 }, (error, stdout, stderr) => {
-        if (error) {
-          if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-            resolvePromise("ERROR: Python not found. Install python3.");
-          } else {
-            const msg = stderr.trim() || error.message;
-            resolvePromise(`ERROR: diff_summarizer.py failed: ${msg}`);
-          }
-          return;
-        }
-        resolvePromise(stdout.trimEnd());
-      });
-    });
+      if (args.useStdinText !== undefined) {
+        const result = await execFileAsync("python3", [script, "--stdin"], { input: args.useStdinText, maxBuffer: 1024 * 1024 * 4 })
+        return result.stdout || "No output."
+      }
+
+      const cwd = args.path ?? "."
+      const result = await execFileAsync("python3", [script], { cwd, maxBuffer: 1024 * 1024 * 4 })
+      return result.stdout || "No output."
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return `diff_summarizer tool failed: ${error.message}`
+      }
+      return "diff_summarizer tool failed with an unknown error."
+    }
   },
-});
+})
