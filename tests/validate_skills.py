@@ -542,7 +542,7 @@ def validate_tool_file(path: Path) -> list[ValidationIssue]:
             )
         )
 
-    if "description" not in content:
+    if not re.search(r'^\s*description\s*:', content, re.MULTILINE):
         issues.append(
             ValidationIssue(
                 "ERROR",
@@ -560,7 +560,7 @@ def validate_tool_file(path: Path) -> list[ValidationIssue]:
             )
         )
 
-    if "execute" not in content:
+    if not re.search(r'^\s*(async\s+)?execute\s*[:(]', content, re.MULTILINE):
         issues.append(
             ValidationIssue(
                 "ERROR",

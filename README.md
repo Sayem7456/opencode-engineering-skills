@@ -141,6 +141,8 @@ All pack files are located in the `packs/` directory at the repository root.
 ```text
 opencode-engineering-skills/
 ├── README.md
+├── AGENTS.md
+├── .gitignore
 ├── LICENSE
 ├── CHANGELOG.md
 ├── pyproject.toml
@@ -183,9 +185,11 @@ opencode-engineering-skills/
 │   │   └── SKILL.md
 │   ├── context-engineering/
 │   │   └── SKILL.md
-│   ├── repository-navigation/
-│   │   └── SKILL.md
-│   └── structured-output-reliability/
+    │   ├── repository-navigation/
+    │   │   └── SKILL.md
+    │   ├── skill-orchestrator/
+    │   │   └── SKILL.md
+    │   └── structured-output-reliability/
 │       └── SKILL.md
 ├── commands/
 │   ├── review.md
@@ -586,73 +590,6 @@ rm -f ~/.config/opencode/tools/context_compressor.ts
 rm -f ~/.config/opencode/tools/prompt_budget.ts
 ```
 
-# How Skills Work
-
-OpenCode discovers the skills and makes them available to its agent.
-
-It does not need to inject the complete content of every skill into every request. The agent can select relevant skills based on their names and descriptions.
-
-For a FastAPI database task, relevant skills may include:
-
-```text
-python-quality
-fastapi-backend
-sqlalchemy-postgres
-testing-and-debugging
-```
-
-For a Next.js dashboard task:
-
-```text
-nextjs-frontend
-ui-ux-design
-testing-and-debugging
-```
-
-For a pull request review:
-
-```text
-code-review
-security-review
-```
-
-For a deployment assessment:
-
-```text
-production-readiness
-security-review
-```
-
-For token-sensitive work in a large repository:
-
-```text
-token-saver
-context-engineering
-repository-navigation
-```
-
-For skill selection and overlap reduction at task start:
-
-```text
-skill-orchestrator
-```
-
-You can explicitly name skills in your prompt when you want deterministic selection.
-
-# Benefits
-
-| Benefit | What It Means |
-|---------|---------------|
-| Consistent standards | Skills enforce typing, validation, error handling, transactions, auth, testing, accessibility, security, and production safety across sessions |
-| Less prompt repetition | Name a skill instead of writing long requirements: `Use fastapi-backend, sqlalchemy-postgres, and testing-and-debugging` |
-| Root-cause analysis | Reproduce, separate symptom from cause, confirm with evidence, apply smallest fix, verify |
-| Safer database changes | Correct session lifecycle, rollback, explicit transactions, idempotency, concurrency safety, migration safety |
-| Better code reviews | Focus on correctness, security, data integrity, API compatibility, regressions — not personal style |
-| Better frontend quality | Server/client boundaries, loading/error states, responsive design, runtime validation, accessibility |
-| Production readiness | Configuration, migrations, health checks, observability, rollback, capacity, failure handling |
-| Token efficiency | Selective reads, grep before reading, no full-file dumps, compact reporting, skip generated files |
-| Reusable across projects | Global installation works with any repo; project-specific rules stay in `AGENTS.md` |
-
 # Practical Difference by Skill
 
 | Skill                   | Without the Skill                                                                                                  | With the Skill                                                                                                                           |
@@ -677,170 +614,9 @@ You can explicitly name skills in your prompt when you want deterministic select
 | `ai-cost-optimization` | LLM costs grow unbounded; expensive models used for every request; no caching or budget enforcement | Token budgets, model routing, caching, retrieval limits, and cost gates control spend without blind quality reduction |
 | `model-serving-production` | Model serving is fragile: no fallback, no monitoring, no capacity planning, and risky deployments | Reliable APIs, cold start mitigations, circuit breakers, canary rollouts, drift monitoring, and evaluation gates ensure production safety |
 
-# Limitations and Disadvantages
+# Limitations
 
-## 1. Skills Do Not Guarantee Correctness
-
-A skill improves the model’s process, but it cannot guarantee:
-
-* correct implementation
-* complete security
-* passing tests
-* correct architecture
-* zero hallucinations
-* production safety
-
-Generated changes still require verification and human review.
-
-## 2. Large Skills Consume Context
-
-When a detailed skill is loaded, it uses part of the model's context window.
-
-Avoid activating every skill for every task.
-
-Prefer relevant combinations.
-
-The `token-saver` and `context-engineering` skills help mitigate this by teaching the agent to read selectively, summarize aggressively, and avoid redundant output — but loading every skill still consumes context. Use them deliberately.
-
-## 3. Overlapping Instructions
-
-Some skills intentionally overlap.
-
-For example:
-
-* `python-quality` and `testing-and-debugging`
-* `fastapi-backend` and `sqlalchemy-postgres`
-* `code-review` and `security-review`
-* `nextjs-frontend` and `ui-ux-design`
-* `production-readiness` and `security-review`
-* `token-saver` and `context-engineering`
-
-Too many simultaneously active skills may make the agent overly cautious or verbose.
-
-The `skill-orchestrator` skill provides a routing model that reduces overlap: it assigns one lead skill per task, scopes supporting skills to their specialties, and activates guardrails (like `security-review`) only when the task touches sensitive areas. See `docs/skill-orchestration-design.md` for the full model and task-category routing tables.
-
-The `/choose-skills`, `/smart-review`, and `/smart-fix` commands automate this orchestration for common task types. See `docs/skill-routing-matrix.md` for a quick-reference task-to-skill routing table with verification depth and exclusion guidance.
-
-## 4. Repository Conventions Still Matter
-
-These skills provide general standards. A project may have different:
-
-* architecture
-* transaction ownership
-* testing tools
-* framework versions
-* deployment model
-* naming conventions
-
-OpenCode should inspect the current repository before applying generic patterns.
-
-## 5. Skills Do Not Replace Documentation
-
-Framework behavior changes over time.
-
-Use current official documentation for version-specific behavior involving:
-
-* FastAPI
-* Pydantic
-* SQLAlchemy
-* PostgreSQL
-* Next.js
-* React
-* TypeScript
-
-## 6. Skills Do Not Replace Tests
-
-A plausible-looking code change is not proof that a problem is solved.
-
-Relevant tests, linting, type checks, builds, and runtime verification are still required.
-
-## 7. Skills Can Be Too Strict for Small Tasks
-
-A tiny change may not require:
-
-* a full security review
-* broad production-readiness analysis
-* extensive architecture inspection
-* the entire test suite
-
-Use judgment and keep verification proportional to risk.
-
-## Overlap Mitigation
-
-Some skills intentionally overlap (`python-quality` and `testing-and-debugging`, `fastapi-backend` and `sqlalchemy-postgres`, `code-review` and `security-review`, `nextjs-frontend` and `ui-ux-design`, and others). Activating all of them for every task duplicates instructions, wastes context, and produces overly cautious or verbose output.
-
-This package mitigates overlap — it does not eliminate it entirely. Skill files retain overlapping guidance so each skill is useful independently. The mitigation works through the following mechanisms:
-
-### skill-orchestrator
-
-The `skill-orchestrator` skill assigns one lead skill per task and limits supporting skills to their specialized domains. It defines guardrails that activate only when the task justifies them (e.g., `security-review` only for security-sensitive changes).
-
-### Smart Commands
-
-These commands apply the orchestration model automatically:
-
-| Command | Purpose |
-|---------|---------|
-| `/choose-skills` | Classify a task and produce a skill plan before starting work |
-| `/smart-review` | Choose a review type and lead skill, then review with only the necessary supporting skills |
-| `/smart-fix` | Choose a lead skill and stack support, then fix with focused verification |
-
-### Reduction Rules
-
-Overlap is reduced by:
-
-- **Lead / support / guardrail model** — exactly one lead defines the workflow; support fills domain gaps; guardrails add checklist items only when triggered
-- **Scoped supporting skills** — a support skill contributes only the sections its lead does not cover; it is excluded entirely when its domain is untouched
-- **Explicit excluded skills** — each task's skill plan lists skills intentionally not used, preventing accidental activation
-- **Verbosity control** — output is `concise` or `standard` by default; `detailed` only for reviews, security, production, or user request
-- **Verification depth control** — verification is `focused` or `module` for most tasks; `full` only for production releases
-
-### Examples
-
-**Bad — activates too many skills for a small bug fix:**
-
-```text
-Use python-quality, testing-and-debugging, fastapi-backend,
-sqlalchemy-postgres, code-review, security-review,
-and production-readiness to fix this small bug.
-```
-
-Nine skills activated. Most add no value: `production-readiness` is irrelevant for a bug fix, `code-review` duplicates `testing-and-debugging` on finding format, `python-quality` overlaps with `fastapi-backend` on error handling.
-
-**Better — uses skill-orchestrator to scope skills:**
-
-```text
-Use skill-orchestrator. Lead: testing-and-debugging.
-Support: sqlalchemy-postgres. Guardrail: security-review
-only if data exposure is found.
-```
-
-Three skills plus a conditional guardrail. The lead drives the fix workflow; the support adds database-specific guidance; the guardrail activates only if the bug reveals sensitive data.
-
-### Token Cost Comparison
-
-The following table shows the estimated context savings of using orchestrated skill selection instead of loading every available skill. Estimates are based on SKILL.md file sizes (~4 chars per token, English prose).
-
-| Scenario | Skills Loaded | Tokens | Savings |
-|----------|--------------|--------|---------|
-| **Bad — all 20 skills + all 13 commands** | All skills, all commands | ~90,648 | baseline |
-| **Good — general code review** | `skill-orchestrator` + `code-review` + 2 smart commands | ~5,933 | **93.5%** |
-| **Good — Python bug fix** | `skill-orchestrator` + `testing-and-debugging` + `python-quality` + 2 smart commands | ~7,827 | **91.4%** |
-| **Good — security review** | `skill-orchestrator` + `security-review` + `code-review` + 2 smart commands | ~8,927 | **90.2%** |
-| **Good — FastAPI bug fix** | `skill-orchestrator` + `testing-and-debugging` + `fastapi-backend` + `security-review` + 2 smart commands | ~11,541 | **87.3%** |
-| **Good — SQLAlchemy issue** | `skill-orchestrator` + `sqlalchemy-postgres` + `testing-and-debugging` + 2 smart commands | ~13,421 | **85.2%** |
-| **Good — Next.js page** | `skill-orchestrator` + `nextjs-frontend` + `ui-ux-design` + `security-review` + 2 smart commands | ~14,775 | **83.7%** |
-| **Good — production release** | `skill-orchestrator` + `production-readiness` + `security-review` + `sqlalchemy-postgres` + 2 smart commands | ~18,132 | **80.0%** |
-
-Orchestration consistently saves **80–93%** of skill-related context tokens across common task types. The savings come from excluding skills whose domain is not touched and avoiding repeated overlap between paired skills.
-
-### Recommended Prompt
-
-```text
-Use skill-orchestrator first. Select one lead skill, limited
-support skills, and excluded skills. Then fix the issue
-with focused verification.
-```
+Skills improve process but do not guarantee correctness, security, or passing tests. Always verify generated changes. Large skills consume context — avoid activating every skill for every task. Repository conventions still matter; inspect the project before applying generic patterns.
 
 # Command Usage Guide
 
@@ -850,7 +626,7 @@ Start any task with `/choose-skills` to produce a skill plan — no need to memo
 |------|---------|-------------|---------|
 | 1. Plan | `/choose-skills` | Any new task — produces a skill plan before work begins | `/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.` |
 | 2. Explore | `/plan` | Before implementing — maps affected files and risks | `/plan Add a paginated teacher dashboard endpoint with branch-level access control.` |
-| 2. Debug | `/debug` | Root cause is unknown; need investigation | `/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError.` |
+| 3. Debug | `/debug` | Root cause is unknown; need investigation | `/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError.` |
 
 **Choose your execution path:**
 
@@ -862,12 +638,17 @@ Start any task with `/choose-skills` to produce a skill plan — no need to memo
 | Review (known code) | `/review` | Review specific files; user knows the scope | `/review src/services/assignment_service.py` |
 | Review (unknown scope) | `/smart-review` | Review scope is broad; need skill orchestration first | `/smart-review src/routes/users.py` |
 
-**Context management:**
+**Feature development:**
 
 | Command | When to Use | Example |
 |---------|-------------|---------|
 | `/implement` | Build a new feature following project conventions | `/implement Add an export-to-CSV endpoint for the analytics dashboard.` |
 | `/refactor` | Restructure code preserving public behavior | `/refactor Move assignment scoring logic into a separate service.` |
+
+**Context management:**
+
+| Command | When to Use | Example |
+|---------|-------------|---------|
 | `/compress-context` | Session is long; produce a working summary | `/compress-context I am investigating a user-creation endpoint failure under load.` |
 | `/context-audit` | Session feels wasteful; find wasted context | `/context-audit I have been debugging this transaction issue for several turns.` |
 | `/handoff-summary` | Handing off to a new session | `/handoff-summary I need to hand off this FastAPI migration to a new session.` |

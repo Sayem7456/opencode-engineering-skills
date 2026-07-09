@@ -211,6 +211,21 @@ for directory in "$SKILLS_DIR"/*; do
 done
 
 # --------------------------------------------------
+# Warn about directories without SKILL.md
+# --------------------------------------------------
+
+for directory in "$SKILLS_DIR"/*; do
+    [[ -d "$directory" ]] || continue
+
+    if [[ ! -f "$directory/SKILL.md" ]]; then
+        folder_name="$(basename "$directory")"
+        echo "  WARNING: directory '$folder_name' exists but has no SKILL.md"
+    fi
+done
+
+echo ""
+
+# --------------------------------------------------
 # Validate commands
 # --------------------------------------------------
 
@@ -329,7 +344,7 @@ if [[ -d "$TOOLS_DIR" ]]; then
         fi
 
         # Check for required properties
-        if ! grep -q 'description:' "$tool_file"; then
+        if ! grep -qE '^\s*description\s*:' "$tool_file"; then
             echo "  ERROR: missing description property"
             failed=1
         fi
@@ -339,7 +354,7 @@ if [[ -d "$TOOLS_DIR" ]]; then
             failed=1
         fi
 
-        if ! grep -q 'execute' "$tool_file"; then
+        if ! grep -qE '^\s*(async\s+)?execute\s*[:(]' "$tool_file"; then
             echo "  ERROR: missing execute property"
             failed=1
         fi
