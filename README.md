@@ -129,30 +129,6 @@ Skill packs are curated groups of skills organized by role and workflow. They ar
 | `ai-engineer-pack` | AI/ML engineer | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, mcp-development, multi-agent-orchestration, fine-tuning, llm-observability, prompt-engineering | LLM apps, RAG pipelines, model serving, MCP servers, multi-agent workflows, fine-tuning, LLM observability, prompt engineering |
 | `fullstack-pack` | Full-stack developer | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation | End-to-end features, cross-stack debugging |
 
-### Installation
-
-Install a pack using the pack installer:
-
-```bash
-# Install the backend pack
-./scripts/install-pack.sh backend
-
-# Install non-interactively
-./scripts/install-pack.sh fullstack --yes
-```
-
-Or install the individual skills directly:
-
-```bash
-npx skills add Sayem7456/opencode-engineering-skills \
-  --skill python-quality \
-  --skill fastapi-backend \
-  --skill sqlalchemy-postgres \
-  --skill testing-and-debugging \
-  --skill security-review \
-  --agent opencode \
-  --global
-```
 
 Each pack file in `packs/` includes its own installation command.
 
