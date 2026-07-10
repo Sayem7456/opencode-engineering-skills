@@ -81,6 +81,7 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `context-engineering`   | Build, compress, and reuse task context across sessions without losing decisions or verification state             |
 | `repository-navigation` | Efficient repository exploration, repo map building, caller tracing, and skipping generated files                  |
 | `skill-orchestrator` | Select the right lead skill and supporting skills, reduce overlap, control verbosity, and avoid unnecessary activation |
+| `system-architecture` | Design, review and document system architecture, covering system context, components, service boundaries, data flow, communication patterns, queues, event-driven design, caching, consistency, availability, scalability, fault tolerance, rate limiting, deployment topology, observability, disaster recovery, capacity planning and cost trade-offs |
 | `structured-output-reliability` | JSON schemas, validation, retries, repair strategies, contracts, and downstream safety for LLM structured output |
 | `llm-app-security` | Review and harden LLM apps against prompt injection, data leakage, unsafe tool use, insecure retrieval and untrusted output |
 | `prompt-injection-defense` | Design, review and implement defenses against direct and indirect prompt injection in LLM applications |
@@ -93,6 +94,7 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `fine-tuning` | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory, covering data prep, training config, LoRA/QLoRA, evaluation and deployment |
 | `llm-observability` | Design and implement observability for LLM applications, including tracing, metrics, cost tracking, online evaluation, alerting and dashboards |
 | `prompt-engineering` | Design, test, and optimize prompts for LLMs, including system prompts, few-shot, chain-of-thought, template management, technique selection and versioning |
+| `ai-system-architecture` | Design, review and document AI system architecture, covering problem framing, model vs. rule decisions, LLM/RAG/ML pipelines, ingestion, retrieval, orchestration, evaluation, serving, safety, privacy, lifecycle and failure modes |
 
 ## Available Commands
 
@@ -110,7 +112,9 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `/context-audit`     | Audit the current session for wasted context and missing information           | `prompt_budget`, `context_compressor` |
 | `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              | `context_compressor`, `prompt_budget` |
 | `/plan`              | Create a compact implementation plan before editing code                       | `repo_map`, `prompt_budget` |
+| `/architecture`      | Produce an architecture design with context, components, data flow, trade-offs, assumptions, and an implementation sequence | `repo_map`, `prompt_budget` |
 | `/safe-apply`        | Apply a planned change safely with diff inspection and verification            | `diff_summarizer` |
+| `/discover`          | Discover capability gaps, missing features, or improvement opportunities in any repository | `repo_map` |
 
 ## Skill Packs
 
@@ -213,6 +217,10 @@ opencode-engineering-skills/
 │   │   └── SKILL.md
 │   ├── prompt-engineering/
 │   │   └── SKILL.md
+│   ├── ai-system-architecture/
+│   │   └── SKILL.md
+│   ├── system-architecture/
+│   │   └── SKILL.md
 ├── commands/
 │   ├── review.md
 │   ├── fix.md
@@ -224,6 +232,8 @@ opencode-engineering-skills/
 │   ├── handoff-summary.md
 │   ├── plan.md
 │   ├── safe-apply.md
+│   ├── architecture.md
+│   ├── discover.md
 │   ├── choose-skills.md
 │   ├── smart-review.md
 │   └── smart-fix.md
@@ -648,6 +658,7 @@ Start any task with `/choose-skills` to produce a skill plan — no need to memo
 
 | Step | Command | When to Use | Example |
 |------|---------|-------------|---------|
+| 0. Discover | `/discover` | Identify gaps, missing capabilities, or improvement opportunities in any repository | `/discover What features could this project benefit from?` |
 | 1. Plan | `/choose-skills` | Any new task — produces a skill plan before work begins | `/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.` |
 | 2. Explore | `/plan` | Before implementing — maps affected files and risks | `/plan Add a paginated teacher dashboard endpoint with branch-level access control.` |
 | 3. Debug | `/debug` | Root cause is unknown; need investigation | `/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError.` |
@@ -805,7 +816,7 @@ Contributions are welcome.
 2. Create a focused branch.
 3. Update or add the relevant skill.
 4. Keep instructions evidence-based and stack-aware.
-5. Avoid duplicating rules unnecessarily.
+5. Apply the New Skill Distinctness Test in `skills/skill-orchestrator/SKILL.md` when proposing new capabilities — compare by responsibility, not name, and extend existing skills when overlap is high.
 6. Run the validation scripts.
 7. Update `CHANGELOG.md`.
 8. Open a pull request describing the problem and improvement.

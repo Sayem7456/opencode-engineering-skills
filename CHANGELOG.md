@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.5.0 (2026-07-10)
+
+### Added
+
+- `system-architecture` — general system architecture design and review skill covering system context, components, service boundaries, data flow, communication patterns, queues, event-driven design, caching, consistency, availability, scalability, fault tolerance, rate limiting, deployment topology, observability, disaster recovery, capacity planning and cost trade-offs
+- `commands/architecture.md` — architecture design command producing context, components, data flow, trade-offs, and implementation sequence
+- `commands/discover.md` — discovery command identifying gaps, missing features, and improvement opportunities in any repository
+
+### Changed
+
+- `skills/skill-orchestrator/SKILL.md` — added New Skill Distinctness Test (inventory-first, compare by responsibility, overlap thresholds, decision rules)
+- `README.md` — added `system-architecture` to Available Skills table and repository tree diagram
+- `docs/skill-routing-matrix.md` — added routing row for `system-architecture`
+
+## 1.4.0 (2026-07-10)
+
+### Added
+
+- `ai-system-architecture` — end-to-end AI system architecture design and review skill covering problem framing, model vs. rule decisions, LLM/RAG/ML pipelines, ingestion, retrieval, orchestration, evaluation, serving, safety, privacy, lifecycle, drift, observability, and failure modes
+
+### Changed
+
+- `README.md` — added `ai-system-architecture` to Available Skills table and repository tree diagram
+- `packs/ai-engineer-pack.md` — added `ai-system-architecture` to pack table, install command, and recent additions
+
 ## 1.3.0 (2026-07-09)
 
 ### Added

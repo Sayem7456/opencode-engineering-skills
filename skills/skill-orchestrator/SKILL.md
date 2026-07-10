@@ -199,3 +199,56 @@ Skill plan:
 - overlap is minimized — no two active skills repeat the same guidance
 - important safety checks are not skipped
 - final output is not unnecessarily verbose
+
+## New Skill Distinctness Test
+
+Whenever proposing a new skill, command, tool, pack, or integration:
+
+1. **Inventory existing capabilities first.**
+
+2. **Compare by responsibility, not name.**
+
+3. **A separate skill should normally have all of:**
+   - a distinct trigger
+   - a distinct primary responsibility
+   - a distinct workflow
+   - a distinct output format
+   - distinct completion criteria
+   - enough reusable guidance to justify independent loading
+
+4. **Evaluate candidate overlap:**
+
+   - **Low:** Less than roughly one-quarter of core responsibility overlaps.
+   - **Medium:** Some shared concerns exist, but workflow and outputs are distinct.
+   - **High:** Most responsibilities already exist elsewhere.
+
+   These are qualitative judgments, not exact mathematical measurements.
+
+5. **Decision rules:**
+
+   - **Low overlap:** Separate skill may be appropriate.
+   - **Medium overlap:** Consider a focused skill or extend the existing skill.
+   - **High overlap:** Extend or improve the existing skill. Do not create a duplicate.
+
+6. **Require this analysis:**
+
+   ```
+   Candidate:
+   Primary responsibility:
+   Existing nearest skill:
+   Shared responsibilities:
+   Distinct responsibilities:
+   Distinct trigger:
+   Distinct workflow:
+   Distinct output:
+   Overlap:
+   Recommendation:
+   - Create new skill
+   - Extend existing skill
+   - Merge proposal
+   - Reject duplicate
+   ```
+
+7. **Do not recommend existing capabilities merely because their names match the current topic.**
+
+8. **During discovery tasks, suppress loaded skill names as candidate recommendations until they pass the distinctness test.**

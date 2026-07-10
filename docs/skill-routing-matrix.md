@@ -32,6 +32,8 @@ Use **one lead skill**. Add supporting skills only when needed. Do not activate 
 | Large refactor | `code-review` | `testing-and-debugging`, relevant stack skill | `production-readiness` if deployment behavior changes | `security-review` (unless auth boundaries touched), `ui-ux-design` (unless UI refactor) | module |
 | RAG feature | `rag-quality-review` | `python-quality` | `security-review` for untrusted input | `fastapi-backend`, `sqlalchemy-postgres`, `nextjs-frontend`, `ui-ux-design` (unless those layers exist) | module |
 | Structured LLM output | `structured-output-reliability` | `python-quality` | `security-review` for untrusted input | `fastapi-backend`, `sqlalchemy-postgres`, `nextjs-frontend` | module |
+| AI system architecture | `ai-system-architecture` | — | `security-review` if auth, PII, or external APIs are in scope | `testing-and-debugging`, `production-readiness` (unless implementation phase) | none (review) |
+| System architecture review | `system-architecture` | — | `security-review` if auth, PII, or external APIs in the architecture | `testing-and-debugging`, `sqlalchemy-postgres` (unless those layers touched) | none (review) |
 | Token compression | `token-saver` or `context-engineering` | `repository-navigation` if repo exploration needed | — | All stack skills, `code-review`, `security-review`, `production-readiness` | none |
 
 ## Examples

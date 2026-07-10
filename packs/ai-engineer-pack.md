@@ -24,6 +24,7 @@ Engineers building, evaluating, and deploying LLM-powered applications. Suitable
 | `fine-tuning` | New | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory, covering data prep, training config, evaluation and deployment |
 | `llm-observability` | New | Design and implement observability for LLM applications, including tracing, metrics, cost tracking, online evaluation, alerting and dashboards |
 | `prompt-engineering` | New | Design, test, and optimize prompts for LLMs, including system prompts, few-shot, chain-of-thought, template management, technique selection and versioning |
+| `ai-system-architecture` | New | Design, review and document AI system architecture, covering problem framing, model vs. rule decisions, LLM/RAG/ML pipelines, ingestion, retrieval, orchestration, evaluation, serving, safety, privacy, lifecycle and failure modes |
 
 ## Recommended Commands
 
@@ -100,6 +101,7 @@ npx skills add Sayem7456/opencode-engineering-skills \
   --skill fine-tuning \
   --skill llm-observability \
   --skill prompt-engineering \
+  --skill ai-system-architecture \
   --agent opencode \
   --global
 ```
@@ -128,3 +130,4 @@ chmod +x scripts/install-opencode.sh
 | `fine-tuning` | 2026-07 | Fine-tune LLMs with Axolotl, Unsloth, TRL or LLaMA-Factory |
 | `llm-observability` | 2026-07 | Monitor, trace, and alert on LLM behavior in production |
 | `prompt-engineering` | 2026-07 | Design, test, and version prompts systematically |
+| `ai-system-architecture` | 2026-07 | Design, review and document AI system architecture end-to-end |
