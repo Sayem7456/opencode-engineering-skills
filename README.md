@@ -207,15 +207,21 @@ opencode-engineering-skills/
 │   │   └── SKILL.md
 │   ├── context-engineering/
 │   │   └── SKILL.md
-    │   ├── repository-navigation/
-    │   │   └── SKILL.md
-    │   ├── skill-orchestrator/
-    │   │   └── SKILL.md
-    │   └── structured-output-reliability/
-│       └── SKILL.md
+│   ├── repository-navigation/
+│   │   └── SKILL.md
+│   ├── skill-orchestrator/
+│   │   └── SKILL.md
+│   ├── structured-output-reliability/
+│   │   └── SKILL.md
 │   ├── llm-observability/
 │   │   └── SKILL.md
 │   ├── prompt-engineering/
+│   │   └── SKILL.md
+│   ├── fine-tuning/
+│   │   └── SKILL.md
+│   ├── mcp-development/
+│   │   └── SKILL.md
+│   ├── multi-agent-orchestration/
 │   │   └── SKILL.md
 │   ├── ai-system-architecture/
 │   │   └── SKILL.md

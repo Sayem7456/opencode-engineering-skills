@@ -12,7 +12,7 @@
 
 - `commands/plan.md` — reverted to universal implementation planning; removed repo-specific discovery mode (replaced by `/discover`)
 - `commands/discover.md` — generalized workflow and output to cover any repository (not just OpenCode skills packages); added Improvement Opportunities section
-- `README.md` — simplified Command Usage Guide to a single unified decision table sorted by goal
+- `README.md` — simplified Command Usage Guide to a single unified decision table sorted by goal; fixed repository tree indentation and added missing skills (fine-tuning, mcp-development, multi-agent-orchestration)
 - `skills/skill-orchestrator/SKILL.md` — added New Skill Distinctness Test (inventory-first, compare by responsibility, overlap thresholds, decision rules)
 - `README.md` — added `system-architecture` to Available Skills table and repository tree diagram
 - `docs/skill-routing-matrix.md` — added routing row for `system-architecture`
