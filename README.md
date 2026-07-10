@@ -654,39 +654,26 @@ Skills improve process but do not guarantee correctness, security, or passing te
 
 # Command Usage Guide
 
-Start any task with `/choose-skills` to produce a skill plan — no need to memorize combinations.
+Pick the command that matches what you want to do.
 
-| Step | Command | When to Use | Example |
-|------|---------|-------------|---------|
-| 0. Discover | `/discover` | Identify gaps, missing capabilities, or improvement opportunities in any repository | `/discover What features could this project benefit from?` |
-| 1. Plan | `/choose-skills` | Any new task — produces a skill plan before work begins | `/choose-skills Debug why the login endpoint returns 500 after upgrading FastAPI.` |
-| 2. Explore | `/plan` | Before implementing — maps affected files and risks | `/plan Add a paginated teacher dashboard endpoint with branch-level access control.` |
-| 3. Debug | `/debug` | Root cause is unknown; need investigation | `/debug Assignment submission intermittently fails with an SQLAlchemy OperationalError.` |
+| Goal | Command | When to Use |
+|------|---------|-------------|
+| Discover what to build | `/discover` | You want to find gaps, missing features, or improvement opportunities |
+| Plan before building | `/plan` | You know what to build and want a scoped plan with risks and files |
+| Design architecture | `/architecture` | You need system design before implementation |
+| Know the bug but not the cause | `/debug` | Root cause is unknown — investigate first |
+| Know the cause, need a fix | `/fix` | Root cause is confirmed — fix + regression test |
+| Vague bug report | `/smart-fix` | Bug is unclear — needs skill orchestration to classify first |
+| Know what to review | `/review` | You know the files — review without modifying |
+| Vague review scope | `/smart-review` | Scope is broad — needs skill orchestration to classify first |
+| Apply a planned change | `/safe-apply` | After `/plan` — applies with diff inspection and verification |
+| Build a new feature | `/implement` | Follow existing project conventions |
+| Restructure code | `/refactor` | Preserve behavior, improve structure |
+| Compress long session | `/compress-context` | Session is long — produce a working summary |
+| Find wasted context | `/context-audit` | Session feels wasteful — identify what to drop or load |
+| Hand off to new session | `/handoff-summary` | Continuing elsewhere — preserve decisions and state |
 
-**Choose your execution path:**
-
-| Path | Command | When to Use | Example |
-|------|---------|-------------|---------|
-| Fix (known bug) | `/fix` | Root cause is confirmed; need a fix + regression test | `/fix The background task reuses the request-scoped session after the request completes.` |
-| Fix (unknown scope) | `/smart-fix` | Bug report is vague; need skill orchestration + fix | `/smart-fix The user avatar upload fails silently when the file exceeds 5 MB.` |
-| Apply planned change | `/safe-apply` | After `/plan` approved; applies with diff inspection + verification | `/safe-apply Apply the approved plan for the paginated teacher dashboard endpoint.` |
-| Review (known code) | `/review` | Review specific files; user knows the scope | `/review src/services/assignment_service.py` |
-| Review (unknown scope) | `/smart-review` | Review scope is broad; need skill orchestration first | `/smart-review src/routes/users.py` |
-
-**Feature development:**
-
-| Command | When to Use | Example |
-|---------|-------------|---------|
-| `/implement` | Build a new feature following project conventions | `/implement Add an export-to-CSV endpoint for the analytics dashboard.` |
-| `/refactor` | Restructure code preserving public behavior | `/refactor Move assignment scoring logic into a separate service.` |
-
-**Context management:**
-
-| Command | When to Use | Example |
-|---------|-------------|---------|
-| `/compress-context` | Session is long; produce a working summary | `/compress-context I am investigating a user-creation endpoint failure under load.` |
-| `/context-audit` | Session feels wasteful; find wasted context | `/context-audit I have been debugging this transaction issue for several turns.` |
-| `/handoff-summary` | Handing off to a new session | `/handoff-summary I need to hand off this FastAPI migration to a new session.` |
+If unsure which lead skills to use, start with `/choose-skills` to get a plan before the task.
 
 # Best Practices
 
