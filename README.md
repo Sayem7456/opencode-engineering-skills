@@ -283,158 +283,72 @@ opencode-engineering-skills/
 
 ## Prerequisites
 
-You need:
-
-* OpenCode
-* Node.js with `npx`
-* Git for manual installation
-* Bash for installing the included slash commands
-
-Check your installations:
-
 ```bash
-opencode --version
-node --version
-npx --version
-git --version
+opencode --version   # OpenCode installed
+node --version       # Node.js with npx
+git --version        # for clone-based installs
 ```
 
-## Option 1: Install All Skills with the Skills CLI
+## Quick start — get everything
 
-
-```bash
-npx skills add Sayem7456/opencode-engineering-skills \
-  --skill '*' \
-  --agent opencode \
-  --global
-```
-
-For non-interactive installation:
+Clone and run the installer to get all skills, slash commands, and custom tools:
 
 ```bash
-npx skills add Sayem7456/opencode-engineering-skills \
-  --skill '*' \
-  --agent opencode \
-  --global \
-  --yes
+git clone https://github.com/Sayem7456/opencode-engineering-skills.git
+cd opencode-engineering-skills
+chmod +x scripts/install-opencode.sh
+./scripts/install-opencode.sh
 ```
 
-This installs the skills globally for OpenCode.
+This installs into:
+```
+~/.config/opencode/skills/     # 27 skills
+~/.config/opencode/commands/   # 15 slash commands
+~/.config/opencode/tools/      # 4 custom tools
+```
 
-## Option 2: Install Selected Skills
+Restart OpenCode or open a new session after installation.
 
-Install only the skills relevant to your work:
+## Install skills only (no commands or tools)
+
+Install every skill:
 
 ```bash
 npx skills add Sayem7456/opencode-engineering-skills \
-  --skill python-quality \
-  --skill fastapi-backend \
-  --skill sqlalchemy-postgres \
-  --agent opencode \
-  --global
+  --skill '*' --agent opencode --global
 ```
 
-For Next.js development:
+Install specific skills:
 
 ```bash
 npx skills add Sayem7456/opencode-engineering-skills \
-  --skill nextjs-frontend \
-  --skill ui-ux-design \
-  --skill testing-and-debugging \
-  --agent opencode \
-  --global
+  --skill python-quality --skill fastapi-backend \
+  --skill sqlalchemy-postgres --agent opencode --global
 ```
 
-For reviews and release checks:
-
-```bash
-npx skills add Sayem7456/opencode-engineering-skills \
-  --skill code-review \
-  --skill security-review \
-  --skill production-readiness \
-  --agent opencode \
-  --global
-```
-
-## Option 3: List Skills Before Installing
+List available skills before installing:
 
 ```bash
 npx skills add Sayem7456/opencode-engineering-skills --list
 ```
 
-## Option 4: Install from the Full GitHub URL
+> **Note:** `npx skills add` installs skills only (to `~/.agents/skills/`). Commands and custom tools require the installer above.
+
+## Install by role pack
+
+Pick a pack for your role — installs skills only. Run the installer after to add commands and tools.
 
 ```bash
-npx skills add \
-  https://github.com/Sayem7456/opencode-engineering-skills \
-  --agent opencode \
-  --global
+./scripts/install-pack.sh backend       # FastAPI backend dev
+./scripts/install-pack.sh frontend      # Next.js frontend dev
+./scripts/install-pack.sh review        # PR / security reviewer
+./scripts/install-pack.sh production    # DevOps / platform
+./scripts/install-pack.sh ai-engineer   # AI / LLM engineer
+./scripts/install-pack.sh fullstack     # Full-stack dev
+./scripts/install-pack.sh fullstack --yes  # non-interactive
 ```
 
-## Option 5: Install One Skill Directly
-
-```bash
-npx skills add \
-  https://github.com/Sayem7456/opencode-engineering-skills/tree/main/skills/fastapi-backend \
-  --agent opencode \
-  --global
-```
-
-## Install Skills and Slash Commands
-
-The Skills CLI installs skills only (to `~/.agents/skills/`). It does not install slash commands.
-
-To install both skills and the included OpenCode slash commands, clone the repository and run the installer:
-
-```bash
-git clone https://github.com/Sayem7456/opencode-engineering-skills.git
-cd opencode-engineering-skills
-
-chmod +x scripts/install-opencode.sh
-./scripts/install-opencode.sh
-```
-
-The installer symlinks content into:
-
-```text
-~/.config/opencode/skills/
-~/.config/opencode/commands/
-~/.config/opencode/tools/
-```
-
-It installs all skills, command files, and TypeScript custom tool wrappers from this repository.
-
-**Summary:**
-
-| What you want                    | Command                                                           |
-| -------------------------------- | ----------------------------------------------------------------- |
-| Skills only                      | `npx skills add Sayem7456/opencode-engineering-skills --skill '*'` |
-| Skills by role pack              | `scripts/install-pack.sh <pack-name>`                             |
-| Skills + slash commands + tools  | `scripts/install-opencode.sh`                                     |
-| Selected skills only             | `npx skills add ... --skill token-saver --skill context-engineering` |
-
-Restart OpenCode or open a new session after installation.
-
-## Install by Pack
-
-Install a curated skill pack for your role using `scripts/install-pack.sh`:
-
-```bash
-# Install the backend pack
-./scripts/install-pack.sh backend
-
-# Install the fullstack pack non-interactively
-./scripts/install-pack.sh fullstack --yes
-```
-
-This runs `npx skills add` with all skills in the selected pack. It installs skills only — slash commands still require a separate step:
-
-```bash
-# After installing skills, also install commands
-./scripts/install-opencode.sh
-```
-
-Available packs and their included skills:
+Pack contents:
 
 | Pack | Skills |
 |------|--------|
@@ -445,101 +359,15 @@ Available packs and their included skills:
 | `ai-engineer` | python-quality, testing-and-debugging, token-saver, context-engineering, structured-output-reliability, llm-app-security, prompt-injection-defense, rag-quality-review, ai-evaluation, ai-cost-optimization, model-serving-production, fine-tuning, mcp-development, multi-agent-orchestration, llm-observability, prompt-engineering |
 | `fullstack` | python-quality, fastapi-backend, sqlalchemy-postgres, nextjs-frontend, ui-ux-design, testing-and-debugging, security-review, code-review, production-readiness, token-saver, context-engineering, repository-navigation |
 
-Pack files in `packs/` contain detailed guidance for each pack including example prompts, best use cases, and when not to use.
+Each pack file in `packs/` includes detailed guidance and example prompts.
 
-## Manual Installation
-
-Clone the repository:
+## Verify installation
 
 ```bash
-git clone https://github.com/Sayem7456/opencode-engineering-skills.git
-cd opencode-engineering-skills
-```
-
-Create the OpenCode directories:
-
-```bash
-mkdir -p ~/.config/opencode/skills
-mkdir -p ~/.config/opencode/commands
-```
-
-Copy the skills:
-
-```bash
-cp -R skills/* ~/.config/opencode/skills/
-```
-
-Copy the commands:
-
-```bash
-cp commands/*.md ~/.config/opencode/commands/
-```
-
-Restart OpenCode after copying the files.
-
-# Verify Installation
-
-List installed skill files:
-
-```bash
-find ~/.config/opencode/skills \
-  -maxdepth 2 \
-  -name SKILL.md \
-  -print
-```
-
-List installed commands:
-
-```bash
-find ~/.config/opencode/commands \
-  -maxdepth 1 \
-  -name '*.md' \
-  -print
-```
-
-List installed custom tools:
-
-```bash
-find ~/.config/opencode/tools \
-  -maxdepth 1 \
-  -name '*.ts' \
-  -print
-```
-
-Check the beginning of every installed skill:
-
-```bash
-for file in ~/.config/opencode/skills/*/SKILL.md; do
-  echo "===== $file ====="
-  head -n 10 "$file"
-done
-```
-
-Each skill should contain valid frontmatter:
-
-```yaml
----
-name: fastapi-backend
-description: Build, review and debug production FastAPI services.
-license: MIT
-compatibility: opencode
-metadata:
-  category: backend
-  stack: python-fastapi
-  version: "1.0.0"
----
-```
-
-The folder name and frontmatter `name` should match exactly.
-
-Example:
-
-```text
-Folder: fastapi-backend
-Name:   fastapi-backend
-```
-
-# Updating
+find ~/.config/opencode/skills -maxdepth 2 -name SKILL.md -print | wc -l   # 27 skills
+ls ~/.config/opencode/commands/*.md | wc -l                                 # 15 commands
+ls ~/.config/opencode/tools/*.ts 2>/dev/null | wc -l                        # 4 tools
+```# Updating
 
 ## Update Skills Installed with the Skills CLI
 
