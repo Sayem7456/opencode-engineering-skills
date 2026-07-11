@@ -138,20 +138,30 @@ if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
         tool_name="${tool_filename%.ts}"
         target="$TOOLS_TARGET_DIR/$tool_filename"
 
-        if [[ ! -L "$target" ]]; then
-            echo "Skipped tool $tool_name: not installed by this symlink installer"
+        if [[ ! -e "$target" ]]; then
             continue
         fi
 
-        resolved_target="$(resolve_path "$target")"
-        resolved_source="$(resolve_path "$tool_file")"
+        if [[ -L "$target" ]]; then
+            resolved_target="$(resolve_path "$target")"
+            resolved_source="$(resolve_path "$tool_file")"
 
-        if [[ "$resolved_target" == "$resolved_source" ]]; then
-            rm "$target"
-            echo "Removed tool: $tool_name"
-            removed_tools=$((removed_tools + 1))
+            if [[ "$resolved_target" == "$resolved_source" ]]; then
+                rm "$target"
+                echo "Removed tool: $tool_name"
+                removed_tools=$((removed_tools + 1))
+            else
+                echo "Skipped tool $tool_name: symlink belongs to another source"
+            fi
         else
-            echo "Skipped tool $tool_name: symlink belongs to another source"
+            # Regular file (installed via cp by older installer versions)
+            if cmp -s "$tool_file" "$target"; then
+                rm "$target"
+                echo "Removed tool: $tool_name"
+                removed_tools=$((removed_tools + 1))
+            else
+                echo "Skipped tool $tool_name: file content differs from source"
+            fi
         fi
     done
 else
