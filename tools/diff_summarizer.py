@@ -105,7 +105,7 @@ def _parse_diff(diff_text: str) -> List[FileDiff]:
             parts = line.split()
             a_path = parts[2] if len(parts) > 2 else ""
             b_path = parts[3] if len(parts) > 3 else ""
-            path = b_path.lstrip("b/") if b_path else a_path.lstrip("a/")
+            path = b_path.removeprefix("b/") if b_path else a_path.removeprefix("a/")
             current_file = FileDiff(path=path)
 
         elif line.startswith("--- /dev/null"):
@@ -125,7 +125,7 @@ def _parse_diff(diff_text: str) -> List[FileDiff]:
 
         elif current_hunk is not None and current_file is not None:
             current_hunk.lines.append(line)
-            if current_file.is_new or line.startswith("+"):
+            if line.startswith("+"):
                 current_file.added += 1
             elif line.startswith("-"):
                 current_file.removed += 1
@@ -141,7 +141,7 @@ def _parse_diff(diff_text: str) -> List[FileDiff]:
 def _detect_symbols(lines: List[str]) -> List[str]:
     symbols: List[str] = []
     for line in lines:
-        m = re.search(r"(?:^|\s)(def|class|fn|func|function|async def)\s+([a-zA-Z_]\w*)", line)
+        m = re.search(r"(?:^|\s)(async def|def|class|fn|func|function)\s+([a-zA-Z_]\w*)", line)
         if m:
             symbols.append(m.group(2))
         m = re.search(r"(?:^|\s)(?:export\s+(?:default\s+)?)?(?:const|let|var|function)\s+([a-zA-Z_]\w*)", line)
@@ -155,7 +155,8 @@ def _detect_symbols(lines: List[str]) -> List[str]:
 
 def _classify_risk(path: str, lines: List[str]) -> str:
     lower_path = path.lower()
-    lower_lines = " ".join(lines).lower()
+    added_lines = [line for line in lines if line.startswith("+")]
+    lower_lines = " ".join(added_lines).lower()
     if any(kw in lower_lines for kw in ("security", "auth", "password", "token", "secret")):
         return "High"
     if any(kw in lower_lines for kw in ("migrat", "drop_table", "grant", "revoke")):
@@ -199,8 +200,8 @@ def _suggest_tests(path: str) -> List[str]:
     tests: List[str] = []
     lower_path = path.lower()
     if lower_path.endswith(".py"):
-        test_path = "test_" + Path(lower_path).name.replace(".py", ".py")
-        tests.append(f"pytest tests/{test_path} -q")
+        test_path = "test_" + Path(lower_path).stem + ".py"
+        tests.append(f"python -m pytest tests/{test_path} -q")
     elif lower_path.endswith((".ts", ".tsx")):
         base = Path(lower_path).stem
         if not base.startswith("test_") and not base.endswith((".test", ".spec")):
@@ -212,11 +213,14 @@ def _suggest_tests(path: str) -> List[str]:
     return tests
 
 
-def summarize_diff(diff_text: str) -> str:
+def summarize_diff(diff_text: str, max_files: int = 0) -> str:
     files = _parse_diff(diff_text)
 
     if not files:
         return "No changes found in diff."
+
+    if max_files > 0:
+        files = files[:max_files]
 
     lines: List[str] = []
     lines.append("## Diff Summary")
@@ -349,7 +353,7 @@ def run(argv: List[str]) -> str:
     if not diff.strip():
         return "No changes found in working tree."
 
-    return summarize_diff(diff)
+    return summarize_diff(diff, max_files=args.max_files)
 
 
 def main() -> None:

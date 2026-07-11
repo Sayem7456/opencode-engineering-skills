@@ -8,7 +8,12 @@ from pathlib import Path
 
 import pytest
 
-from tools.repo_map import build_repo_map
+from tools.repo_map import (
+    _check_secrets,
+    _is_ignored_dir,
+    _relative_path,
+    build_repo_map,
+)
 
 
 @pytest.fixture
@@ -135,3 +140,47 @@ class TestRepoMap:
         (tmp_path / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n")
         result = build_repo_map(tmp_path, max_files=300)
         assert "## Repo Map:" in result
+
+    def test_max_files_truncates_each_category(self, tmp_path: Path) -> None:
+        for i in range(5):
+            route_dir = tmp_path / "routes"
+            route_dir.mkdir(exist_ok=True)
+            (route_dir / f"file_{i}.py").write_text("")
+        result_all = build_repo_map(tmp_path, max_files=0)
+        result_limited = build_repo_map(tmp_path, max_files=2)
+        count_all = result_all.count("file_")
+        count_limited = result_limited.count("file_")
+        assert count_all > count_limited
+        assert count_limited <= 4  # 2 per category * 2 categories (backend may appear too)
+
+    def test_framework_detection_fastapi_via_main_py(self, tmp_path: Path) -> None:
+        (tmp_path / "main.py").write_text("from fastapi import FastAPI\n")
+        result = build_repo_map(tmp_path, max_files=300)
+        assert "FastAPI" in result
+
+    def test_secret_detection(self, tmp_path: Path) -> None:
+        (tmp_path / "config.py").write_text('API_KEY = "sk-abc12345def67890ghij"\n')
+        result = build_repo_map(tmp_path, max_files=300)
+        assert "Possible Secrets" in result
+        assert "config.py" in result
+
+    def test_secret_detection_ignored_dir(self, tmp_path: Path) -> None:
+        (tmp_path / "node_modules").mkdir()
+        (tmp_path / "node_modules" / "secret.js").write_text('API_KEY = "sk-abc"\n')
+        result = build_repo_map(tmp_path, max_files=300)
+        assert "Possible Secrets" not in result
+
+    def test_is_ignored_dir_egg_info(self) -> None:
+        assert _is_ignored_dir("my_package.egg-info")
+        assert _is_ignored_dir(".git")
+        assert not _is_ignored_dir("src")
+
+    def test_relative_path_within_root(self, tmp_path: Path) -> None:
+        sub = tmp_path / "a" / "b" / "file.py"
+        sub.parent.mkdir(parents=True)
+        sub.write_text("")
+        assert _relative_path(sub, tmp_path) == "a/b/file.py"
+
+    def test_relative_path_outside_root(self, tmp_path: Path) -> None:
+        outside = Path("/tmp/other.py")
+        assert _relative_path(outside, tmp_path) == "other.py"

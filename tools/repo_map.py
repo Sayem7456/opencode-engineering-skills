@@ -28,8 +28,6 @@ IGNORED_DIRS: Set[str] = {
     ".tox",
     "target",
     ".eggs",
-    "*.egg-info",
-    ".gitkeep",
 }
 
 LANGUAGE_PATTERNS: Dict[str, List[str]] = {
@@ -76,9 +74,9 @@ PACKAGE_MANAGER_FILES: Dict[str, str] = {
 }
 
 FRAMEWORK_PATTERNS: Dict[str, List[str]] = {
-    "FastAPI": ["**/fastapi/**", "**/main.py:FastAPI"],
+    "FastAPI": ["**/fastapi/**", "**/main.py"],
     "Django": ["**/django/**", "manage.py"],
-    "Flask": ["**/flask/**", "**/app.py:Flask"],
+    "Flask": ["**/flask/**", "**/app.py"],
     "Next.js": ["next.config.js", "next.config.mjs", "next.config.ts"],
     "React": ["**/react/**", "**/*.tsx", "**/*.jsx"],
     "Vue": ["**/vue/**", "**/*.vue"],
@@ -92,7 +90,7 @@ FRAMEWORK_PATTERNS: Dict[str, List[str]] = {
     "Django ORM": ["**/models.py"],
     "Prisma": ["schema.prisma"],
     "Pydantic": ["**/pydantic/**"],
-    "Pytest": ["**/conftest.py", "pytest.ini", "pyproject.toml:pytest"],
+    "Pytest": ["**/conftest.py", "pytest.ini", "pyproject.toml"],
 }
 
 CONFIG_FILES: List[str] = [
@@ -126,6 +124,10 @@ SECRET_PATTERNS: List[re.Pattern] = [
 ]
 
 
+def _is_ignored_dir(name: str) -> bool:
+    return name in IGNORED_DIRS or name.endswith(".egg-info")
+
+
 def _should_ignore(name: str) -> bool:
     if name.startswith(".") and name not in (".", ".."):
         return name not in {
@@ -134,9 +136,7 @@ def _should_ignore(name: str) -> bool:
             ".gitattributes",
             ".dockerignore",
         }
-    return name in IGNORED_DIRS or any(
-        name.startswith(prefix) for prefix in ("*.",)
-    )
+    return _is_ignored_dir(name)
 
 
 def _detect_languages(root: Path) -> Dict[str, int]:
@@ -146,7 +146,7 @@ def _detect_languages(root: Path) -> Dict[str, int]:
             continue
         relative = path.relative_to(root)
         parts = relative.parts
-        if any(p in IGNORED_DIRS for p in parts):
+        if any(_is_ignored_dir(p) for p in parts):
             continue
         for lang, patterns in LANGUAGE_PATTERNS.items():
             for pattern in patterns:
@@ -212,7 +212,7 @@ def _find_backend_files(root: Path) -> List[Path]:
     for pattern in patterns:
         for match in root.glob(pattern):
             if match.is_file() and not any(
-                p in IGNORED_DIRS for p in match.relative_to(root).parts
+                _is_ignored_dir(p) for p in match.relative_to(root).parts
             ):
                 found.add(match)
     return sorted(found)
@@ -234,7 +234,7 @@ def _find_frontend_files(root: Path) -> List[Path]:
     for pattern in patterns:
         for match in root.glob(pattern):
             if match.is_file() and not any(
-                p in IGNORED_DIRS for p in match.relative_to(root).parts
+                _is_ignored_dir(p) for p in match.relative_to(root).parts
             ):
                 found.add(match)
     return sorted(found)
@@ -255,7 +255,7 @@ def _find_database_migration_files(root: Path) -> List[Path]:
     for pattern in patterns:
         for match in root.glob(pattern):
             if match.is_file() and not any(
-                p in IGNORED_DIRS for p in match.relative_to(root).parts
+                _is_ignored_dir(p) for p in match.relative_to(root).parts
             ):
                 found.add(match)
     return sorted(found)
@@ -278,13 +278,20 @@ def _find_test_files(root: Path) -> List[Path]:
     for pattern in patterns:
         for match in root.glob(pattern):
             if match.is_file() and not any(
-                p in IGNORED_DIRS for p in match.relative_to(root).parts
+                _is_ignored_dir(p) for p in match.relative_to(root).parts
             ):
                 found.add(match)
     return sorted(found)
 
 
-def _scan_tree(root: Path, dirs_below_root: int = 3) -> str:
+def _relative_path(path: Path, root: Path) -> str:
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return path.name
+
+
+def _scan_tree(root: Path, max_files: int = 0) -> str:
     lines: List[str] = []
     root_name = root.name
     lines.append(f"## Repo Map: {root.absolute()}")
@@ -309,56 +316,43 @@ def _scan_tree(root: Path, dirs_below_root: int = 3) -> str:
     config_files = _find_config_files(root)
     if config_files:
         lines.append("### Important Config Files")
-        for cf in config_files:
-            try:
-                rel = cf.relative_to(root)
-                lines.append(f"- `{rel}`")
-            except ValueError:
-                lines.append(f"- `{cf.name}`")
+        for cf in config_files[:max_files] if max_files else config_files:
+            lines.append(f"- `{_relative_path(cf, root)}`")
         lines.append("")
 
     backend = _find_backend_files(root)
     if backend:
         lines.append("### Backend-Related Files")
-        for bf in backend:
-            try:
-                rel = bf.relative_to(root)
-            except ValueError:
-                rel = bf
-            lines.append(f"- `{rel}`")
+        for bf in backend[:max_files] if max_files else backend:
+            lines.append(f"- `{_relative_path(bf, root)}`")
         lines.append("")
 
     frontend = _find_frontend_files(root)
     if frontend:
         lines.append("### Frontend-Related Files")
-        for ff in frontend:
-            try:
-                rel = ff.relative_to(root)
-            except ValueError:
-                rel = ff
-            lines.append(f"- `{rel}`")
+        for ff in frontend[:max_files] if max_files else frontend:
+            lines.append(f"- `{_relative_path(ff, root)}`")
         lines.append("")
 
     db_files = _find_database_migration_files(root)
     if db_files:
         lines.append("### Database / Migration Files")
-        for df in db_files:
-            try:
-                rel = df.relative_to(root)
-            except ValueError:
-                rel = df
-            lines.append(f"- `{rel}`")
+        for df in db_files[:max_files] if max_files else db_files:
+            lines.append(f"- `{_relative_path(df, root)}`")
         lines.append("")
 
     tests = _find_test_files(root)
     if tests:
         lines.append("### Tests")
-        for tf in tests:
-            try:
-                rel = tf.relative_to(root)
-            except ValueError:
-                rel = tf
-            lines.append(f"- `{rel}`")
+        for tf in tests[:max_files] if max_files else tests:
+            lines.append(f"- `{_relative_path(tf, root)}`")
+        lines.append("")
+
+    secrets = _check_secrets(root)
+    if secrets:
+        lines.append("### Possible Secrets")
+        for s in secrets[:max_files] if max_files else secrets:
+            lines.append(f"- `{s}`")
         lines.append("")
 
     ignored_dirs = [d for d in sorted(IGNORED_DIRS) if (root / d).exists()]
@@ -411,8 +405,38 @@ def _suggest_next_reads(
     return suggestions
 
 
-def _check_secrets(root: Path, max_files: int) -> int:
-    return 0
+def _check_secrets(root: Path) -> List[str]:
+    found: List[str] = []
+    seen: Set[str] = set()
+    patterns = (
+        "**/*.py", "**/*.ts", "**/*.js",
+        "**/*.env", "**/*.yml", "**/*.yaml",
+        "**/*.json", "**/*.toml", "**/*.cfg",
+        "**/*.ini", "**/*.conf",
+    )
+    for pattern in patterns:
+        for path in root.glob(pattern):
+            if not path.is_file():
+                continue
+            parts = path.relative_to(root).parts
+            if any(_is_ignored_dir(p) for p in parts):
+                continue
+            rel = _relative_path(path, root)
+            if rel in seen:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8", errors="replace")
+            except (OSError, UnicodeDecodeError):
+                continue
+            for line in text.splitlines():
+                for secret_pattern in SECRET_PATTERNS:
+                    if secret_pattern.search(line):
+                        found.append(rel)
+                        seen.add(rel)
+                        break
+                if rel in seen:
+                    break
+    return sorted(found)
 
 
 def build_repo_map(root: Path, max_files: int) -> str:
@@ -426,7 +450,7 @@ def build_repo_map(root: Path, max_files: int) -> str:
     except PermissionError:
         return f"ERROR: Permission denied: {root}"
 
-    return _scan_tree(root)
+    return _scan_tree(root, max_files=max_files)
 
 
 def _parse_args(argv: List[str]) -> argparse.Namespace:
@@ -458,15 +482,7 @@ def _parse_args(argv: List[str]) -> argparse.Namespace:
 def run(argv: List[str]) -> str:
     args = _parse_args(argv)
     root = Path(args.path)
-    return main_repo_map(root, args.max_files)
-
-
-def main_repo_map(root: Path, max_files: int) -> str:
-    return main_impl(root, max_files)
-
-
-def main_impl(root: Path, max_files: int) -> str:
-    return _scan_tree(root)
+    return build_repo_map(root, args.max_files)
 
 
 def main() -> None:

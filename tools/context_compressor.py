@@ -80,21 +80,6 @@ def _classify_line(line: str) -> str:
     return "prose"
 
 
-PRESERVE_TYPES: Set[str] = {
-    "error",
-    "path_line",
-    "command",
-    "http_route",
-    "schema_migration",
-    "test_result",
-    "env_var",
-    "log_entry",
-}
-
-CONDENSE_TYPES: Set[str] = {"prose"}
-REMOVE_TYPES: Set[str] = {"empty"}
-
-
 def compress_text(
     text: str,
     max_lines: int = 60,
@@ -154,13 +139,13 @@ def compress_text(
     output.append(f"**Original:** {total_lines} lines  **Compressed:** (output follows)")
     output.append("")
 
-    if errors:
+    if errors and preserve_errors:
         output.append("## Exact Errors Preserved")
         for e in errors:
             output.append(f"```\n{e}\n```" if "\n" in e else f"- `{e}`")
         output.append("")
 
-    if path_lines:
+    if path_lines and preserve_paths:
         output.append("## Files and Locations")
         seen_paths: Set[str] = set()
         for p in path_lines:
@@ -232,16 +217,31 @@ def compress_text(
                 output.append(f"- `{log_line}`")
         output.append("")
 
-    removed_count = sum(
-        1 for ctype, _, _ in classified if ctype in ("log_entry", "prose") or ctype == "empty"
-    )
-    if removed_count > 0:
+    uncertainty_lines = [
+        l for ctype, l, _ in classified
+        if ctype == "prose" and any(kw in l.lower()
+                                   for kw in ("uncertain", "unknown", "not sure", "might", "maybe",
+                                              "wonder", "suspect", "unclear", "unlikely"))
+    ]
+
+    empty_count = sum(1 for ctype, _, _ in classified if ctype == "empty")
+    log_repeated = sum(c - 1 for c in Counter(log_entries).values() if c > 1)
+    uncertainty_shown = min(len(uncertainty_lines), 3)
+    prose_dropped = len(prose_lines) - uncertainty_shown
+    total_removed = empty_count + log_repeated + prose_dropped
+    if total_removed > 0:
         output.append(f"## Repeated or Low-Value Content Removed")
-        output.append(f"Removed approximately {removed_count} repeated log lines and prose to reduce noise.")
+        output.append(f"Removed approximately {total_removed} lines: "
+                       f"{log_repeated} repeated log, "
+                       f"{prose_dropped} prose, "
+                       f"{empty_count} blank.")
         output.append("")
 
     output.append("## Next Suggested Reads")
-    all_paths = [m.group(1) for p in path_lines if (m := PATH_LINE_PATTERN.search(p))]
+    all_paths = (
+        [m.group(1) for p in path_lines if (m := PATH_LINE_PATTERN.search(p))]
+        if preserve_paths else []
+    )
     if all_paths:
         most_common_paths = Counter(all_paths).most_common(5)
         for path_str, cnt in most_common_paths:
@@ -251,12 +251,6 @@ def compress_text(
     output.append("")
 
     output.append("## Uncertainty")
-    uncertainty_lines = [
-        l for ctype, l, _ in classified
-        if ctype == "prose" and any(kw in l.lower()
-                                   for kw in ("uncertain", "unknown", "not sure", "might", "maybe",
-                                              "wonder", "suspect", "unclear", "unlikely"))
-    ]
     if uncertainty_lines:
         for u in uncertainty_lines[:3]:
             output.append(f"- *{u.strip()}*")

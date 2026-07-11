@@ -52,9 +52,9 @@ IGNORED_DIRS: Set[str] = {
     ".tox",
     "target",
     ".eggs",
-    ".gitkeep",
-    "*.egg-info",
 }
+
+IGNORED_DIR_SUFFIXES: Set[str] = {".egg-info"}
 
 
 def estimate_tokens(text: str) -> int:
@@ -72,11 +72,11 @@ def _walk_significant_files(directory: Path) -> List[Path]:
             except ValueError:
                 continue
             parts = relative.parts
-            if any(p in IGNORED_DIRS for p in parts):
+            if any(p in IGNORED_DIRS or any(p.endswith(s) for s in IGNORED_DIR_SUFFIXES) for p in parts):
                 continue
             if path.suffix in SIGNIFICANT_EXTENSIONS or path.name in SIGNIFICANT_EXTENSIONS:
                 files.append(path)
-    except PermissionError:
+    except (PermissionError, RecursionError):
         pass
     return files
 
@@ -104,7 +104,7 @@ def analyze_file(path: Path, base: Path | None = None) -> Dict:
     }
 
 
-def analyze_directory(directory: Path) -> Dict:
+def analyze_directory(directory: Path, top: int = 20) -> Dict:
     files = _walk_significant_files(directory)
     results = [analyze_file(f, base=directory) for f in files]
     results = [r for r in results if "error" not in r]
@@ -112,7 +112,7 @@ def analyze_directory(directory: Path) -> Dict:
     total_chars = sum(r["chars"] for r in results)
     total_tokens = max(1, total_chars // 4)
 
-    largest = sorted(results, key=lambda r: -r["chars"])[:20]
+    largest = sorted(results, key=lambda r: -r["chars"])[:top]
 
     return {
         "path": str(directory),
@@ -134,7 +134,7 @@ def build_prompt_budget(
     lines.append("")
 
     if directory:
-        analysis = analyze_directory(directory)
+        analysis = analyze_directory(directory, top=top)
         lines.append(f"## Directory: {analysis['path']}")
         lines.append("")
         lines.append(f"**Source files discovered:** {analysis['total_files']}")

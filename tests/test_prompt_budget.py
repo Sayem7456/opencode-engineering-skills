@@ -11,6 +11,7 @@ from tools.prompt_budget import (
     build_prompt_budget,
     analyze_file,
     analyze_directory,
+    run,
 )
 
 
@@ -114,3 +115,59 @@ class TestBuildPromptBudget:
     def test_no_args_returns_error(self):
         result = build_prompt_budget()
         assert "ERROR" in result
+
+    def test_top_above_twenty(self, tmp_path: Path) -> None:
+        for i in range(30):
+            (tmp_path / f"file_{i}.py").write_text(f"# file {i}\n")
+        result = build_prompt_budget(directory=tmp_path, top=25)
+        table_lines = [l for l in result.splitlines() if "file_" in l]
+        assert len(table_lines) == 25
+
+    def test_run_file_dispatch(self, tmp_path: Path) -> None:
+        f = tmp_path / "test.txt"
+        f.write_text("hello world\n")
+        result = run(["--file", str(f)])
+        assert "# Prompt Budget" in result
+        assert "File:" in result
+
+    def test_run_dir_dispatch(self, tmp_path: Path) -> None:
+        (tmp_path / "a.py").write_text("x = 1\n")
+        (tmp_path / "b.py").write_text("y = 2\n")
+        result = run(["--dir", str(tmp_path)])
+        assert "# Prompt Budget" in result
+        assert "Directory:" in result
+        assert "2" in result or "2" in result
+
+    def test_run_invalid_arg(self, tmp_path: Path) -> None:
+        result = run(["--file", str(tmp_path / "nope")])
+        assert "ERROR" in result
+
+    def test_run_no_args(self) -> None:
+        result = run([])
+        assert "ERROR" in result
+
+
+class TestWalkSignificantFiles:
+    def test_egg_info_excluded(self, tmp_path: Path) -> None:
+        pkg_dir = tmp_path / "my_package.egg-info"
+        pkg_dir.mkdir()
+        (pkg_dir / "PKG-INFO").write_text("Metadata-Version: 2.1\n")
+        (tmp_path / "main.py").write_text("x = 1\n")
+        result = analyze_directory(tmp_path)
+        assert result["total_files"] == 1
+
+    def test_analyze_directory_respects_top(self, tmp_path: Path) -> None:
+        for i in range(10):
+            (tmp_path / f"file_{i}.py").write_text(f"# file {i}\n")
+        result = analyze_directory(tmp_path, top=3)
+        assert len(result["largest"]) == 3
+
+    def test_circular_symlink_does_not_crash(self, tmp_path: Path) -> None:
+        (tmp_path / "real.py").write_text("x = 1\n")
+        link = tmp_path / "loop"
+        try:
+            link.symlink_to(tmp_path, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            pytest.skip("Cannot create symlinks on this platform")
+        result = analyze_directory(tmp_path)
+        assert result["total_files"] >= 1

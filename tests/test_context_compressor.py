@@ -132,3 +132,28 @@ class TestCompressor:
         error_text = "RuntimeError: critical failure"
         result = compress_text(error_text)
         assert "RuntimeError" in result
+
+    def test_preserve_errors_false_hides_errors(self):
+        text = "RuntimeError: boom\n" * 30
+        result = compress_text(text, max_lines=10, preserve_errors=False)
+        assert "# Compressed Context" in result
+        assert "RuntimeError" not in result
+
+    def test_preserve_paths_false_hides_paths(self):
+        text = 'File "src/main.py", line 10, in run\n' * 30
+        result = compress_text(text, max_lines=10, preserve_paths=False)
+        assert "# Compressed Context" in result
+        assert "Files and Locations" not in result
+        assert "src/main.py" not in result
+
+    def test_removed_count_breakdown(self):
+        text =(
+            "INFO start\n" * 10
+            + "just some prose\n" * 8
+            + "\n" * 5
+            + "ERROR critical\n"
+        )
+        result = compress_text(text, max_lines=15)
+        assert "repeated log" in result
+        assert "prose" in result
+        assert "blank" in result
