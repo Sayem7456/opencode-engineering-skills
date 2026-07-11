@@ -9,6 +9,30 @@ COMMANDS_SOURCE_DIR="$REPO_ROOT/commands"
 DOCS_SOURCE_DIR="$REPO_ROOT/docs"
 TOOLS_SOURCE_DIR="$REPO_ROOT/opencode-tools"
 
+# Install Node.js dependencies for custom tools (requires @opencode-ai/plugin)
+if [[ -f "$REPO_ROOT/package.json" ]]; then
+    echo "Installing Node.js dependencies for custom tools..."
+    if ! (cd "$REPO_ROOT" && npm install --ignore-scripts --no-fund --no-audit 2>&1); then
+        echo "ERROR: npm install failed. Check output above for details." >&2
+        exit 1
+    fi
+    echo "Done."
+fi
+
+resolve_path() {
+    local path="$1"
+
+    if command -v python3 &>/dev/null; then
+        python3 -c "import os; print(os.path.realpath('$path'))"
+    elif command -v python &>/dev/null; then
+        python -c "import os; print(os.path.realpath('$path'))"
+    elif [[ -L "$path" ]]; then
+        readlink "$path"
+    else
+        echo "$path"
+    fi
+}
+
 OPENCODE_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 SKILLS_TARGET_DIR="$OPENCODE_CONFIG_DIR/skills"
 COMMANDS_TARGET_DIR="$OPENCODE_CONFIG_DIR/commands"
@@ -41,10 +65,17 @@ for skill_dir in "$SKILLS_SOURCE_DIR"/*; do
     target="$SKILLS_TARGET_DIR/$skill_name"
 
     if [[ -L "$target" ]]; then
-        echo "Replacing existing symlink: $skill_name"
-        rm "$target"
+        resolved_target="$(resolve_path "$target")"
+        resolved_source="$(resolve_path "$skill_dir")"
+        if [[ "$resolved_target" == "$resolved_source" ]]; then
+            echo "Replacing existing symlink: $skill_name"
+            rm "$target"
+        else
+            echo "Warning: $target is a symlink from another source. Skipping." >&2
+            continue
+        fi
     elif [[ -e "$target" ]]; then
-        echo "Warning: $skill_name already exists and is not a symlink. Skipping."
+        echo "Warning: $skill_name already exists and is not a symlink. Skipping." >&2
         continue
     fi
 
@@ -53,6 +84,10 @@ for skill_dir in "$SKILLS_SOURCE_DIR"/*; do
     echo "Installed skill: $skill_name"
     installed_skills=$((installed_skills + 1))
 done
+
+if [[ "$installed_skills" -eq 0 ]]; then
+    echo "Notice: No skill directories found under $SKILLS_SOURCE_DIR" >&2
+fi
 
 if [[ -d "$COMMANDS_SOURCE_DIR" ]]; then
     mkdir -p "$COMMANDS_TARGET_DIR"
@@ -65,10 +100,17 @@ if [[ -d "$COMMANDS_SOURCE_DIR" ]]; then
         target="$COMMANDS_TARGET_DIR/$command_filename"
 
         if [[ -L "$target" ]]; then
-            echo "Replacing existing symlink: /$command_name"
-            rm "$target"
+            resolved_target="$(resolve_path "$target")"
+            resolved_source="$(resolve_path "$command_file")"
+            if [[ "$resolved_target" == "$resolved_source" ]]; then
+                echo "Replacing existing symlink: /$command_name"
+                rm "$target"
+            else
+                echo "Warning: $target is a symlink from another source. Skipping." >&2
+                continue
+            fi
         elif [[ -e "$target" ]]; then
-            echo "Warning: /$command_name already exists and is not a symlink. Skipping."
+            echo "Warning: /$command_name already exists and is not a symlink. Skipping." >&2
             continue
         fi
 
@@ -79,6 +121,10 @@ if [[ -d "$COMMANDS_SOURCE_DIR" ]]; then
     done
 else
     echo "Commands directory not found. Skipping command installation."
+fi
+
+if [[ "$installed_commands" -eq 0 ]] && [[ -d "$COMMANDS_SOURCE_DIR" ]]; then
+    echo "Notice: No command files found under $COMMANDS_SOURCE_DIR" >&2
 fi
 
 # --------------------------------------------------
@@ -95,10 +141,17 @@ if [[ -d "$DOCS_SOURCE_DIR" ]]; then
         target="$DOCS_TARGET_DIR/$doc_filename"
 
         if [[ -L "$target" ]]; then
-            echo "Replacing existing symlink: docs/$doc_filename"
-            rm "$target"
+            resolved_target="$(resolve_path "$target")"
+            resolved_source="$(resolve_path "$doc_file")"
+            if [[ "$resolved_target" == "$resolved_source" ]]; then
+                echo "Replacing existing symlink: docs/$doc_filename"
+                rm "$target"
+            else
+                echo "Warning: $target is a symlink from another source. Skipping." >&2
+                continue
+            fi
         elif [[ -e "$target" ]]; then
-            echo "Warning: docs/$doc_filename already exists and is not a symlink. Skipping."
+            echo "Warning: docs/$doc_filename already exists and is not a symlink. Skipping." >&2
             continue
         fi
 
@@ -107,6 +160,10 @@ if [[ -d "$DOCS_SOURCE_DIR" ]]; then
         echo "Installed doc: $doc_filename"
         installed_docs=$((installed_docs + 1))
     done
+fi
+
+if [[ "$installed_docs" -eq 0 ]] && [[ -d "$DOCS_SOURCE_DIR" ]]; then
+    echo "Notice: No doc files found under $DOCS_SOURCE_DIR" >&2
 fi
 
 # --------------------------------------------------
@@ -124,10 +181,17 @@ if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
         target="$TOOLS_TARGET_DIR/$tool_filename"
 
         if [[ -L "$target" ]]; then
-            echo "Replacing existing symlink: $tool_name"
-            rm "$target"
+            resolved_target="$(resolve_path "$target")"
+            resolved_source="$(resolve_path "$tool_file")"
+            if [[ "$resolved_target" == "$resolved_source" ]]; then
+                echo "Replacing existing symlink: $tool_name"
+                rm "$target"
+            else
+                echo "Warning: $target is a symlink from another source. Skipping." >&2
+                continue
+            fi
         elif [[ -e "$target" ]]; then
-            echo "Warning: $tool_name already exists and is not a symlink. Skipping."
+            echo "Warning: $tool_name already exists and is not a symlink. Skipping." >&2
             continue
         fi
 
@@ -138,6 +202,10 @@ if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
     done
 else
     echo "Tools directory not found. Skipping tool installation."
+fi
+
+if [[ "$installed_tools" -eq 0 ]] && [[ -d "$TOOLS_SOURCE_DIR" ]]; then
+    echo "Notice: No tool files found under $TOOLS_SOURCE_DIR" >&2
 fi
 
 echo
@@ -168,6 +236,6 @@ echo
 echo "If OpenCode returns an unexpected server error,"
 echo "temporarily disable tools with:"
 echo
-echo "  mv ~/.config/opencode/tools ~/.config/opencode/tools.disabled"
+echo "  mv ${OPENCODE_CONFIG_DIR}/tools ${OPENCODE_CONFIG_DIR}/tools.disabled"
 echo
 echo "Restart OpenCode or open a new session."

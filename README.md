@@ -31,7 +31,7 @@ This repository includes four OpenCode custom tools (`.ts` wrappers) backed by P
 | `context_compressor` | Compress logs, stack traces, and session context while preserving exact errors, paths, and commands | `python tools/context_compressor.py` |
 | `prompt_budget` | Estimate context size (chars/tokens) and recommend reading strategies | `python tools/prompt_budget.py` |
 
-These tools are installed as symlinks to `~/.config/opencode/tools/` by the installer. If a custom tool is unavailable, the Python scripts in `tools/` can be run directly from the cloned repository.
+These tools are installed as symlinks to `~/.config/opencode/tools/` by the installer. The TypeScript wrappers require `@opencode-ai/plugin` — run `npm install` in the repo root (or use the installer below which does this automatically). If a custom tool is unavailable, the Python scripts in `tools/` can be run directly from the cloned repository.
 
 ## Token Saving and Context Compression
 

@@ -25,6 +25,22 @@ npx skills add Sayem7456/opencode-engineering-skills --skill '*' --agent opencod
 ./scripts/install-pack.sh backend
 ```
 
+## First-time setup (custom tools)
+
+Custom tools in `opencode-tools/` require `@opencode-ai/plugin`. After cloning, run:
+
+```bash
+npm install
+```
+
+Then verify tools load correctly:
+
+```bash
+opencode run "Say hello"
+```
+
+If you see an `UnknownError`, check server logs with `--print-logs --log-level DEBUG` to confirm the module is resolvable.
+
 ## Structure
 
 | Path | Purpose |
