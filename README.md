@@ -105,7 +105,6 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `/debug`             | Investigate a bug and identify its root cause                                  | `diff_summarizer`, `repo_map` |
 | `/implement`         | Implement a new feature using existing project conventions                     | `repo_map`, `prompt_budget` |
 | `/refactor`          | Refactor existing code while preserving observable behavior                    | `repo_map`, `diff_summarizer` |
-| `/choose-skills`     | Select the best lead and supporting skills while avoiding overlapping instructions | — |
 | `/smart-review`      | Review code with one lead review skill and only necessary supporting skills    | `diff_summarizer` |
 | `/smart-fix`         | Fix a bug using minimum necessary skills and focused verification              | `diff_summarizer` |
 | `/compress-context`  | Compress the current session context into a concise working summary            | `context_compressor`, `prompt_budget` |
@@ -216,7 +215,6 @@ opencode-engineering-skills/
 │   ├── safe-apply.md
 │   ├── architecture.md
 │   ├── discover.md
-│   ├── choose-skills.md
 │   ├── smart-review.md
 │   └── smart-fix.md
 ├── opencode-tools/
@@ -341,7 +339,7 @@ Each pack file in `packs/` includes detailed guidance and example prompts.
 
 ```bash
 find ~/.config/opencode/skills -maxdepth 2 -name SKILL.md -print | wc -l   # 27 skills
-ls ~/.config/opencode/commands/*.md | wc -l                                 # 15 commands
+ls ~/.config/opencode/commands/*.md | wc -l                                 # 14 commands
 ls ~/.config/opencode/tools/*.ts 2>/dev/null | wc -l                        # 4 tools
 ```# Updating
 
@@ -484,11 +482,6 @@ Pick the command that matches what you want to do.
 | Hand off to new session | `/handoff-summary` | Continuing elsewhere — preserve decisions and state |
 
 ### Example Prompts
-
-**Choose skills for a task:**
-```
-/choose-skills I need to build a GraphQL API with FastAPI, add tests, and deploy — which skills should I load?
-```
 
 **Discover gaps or improvement opportunities:**
 ```

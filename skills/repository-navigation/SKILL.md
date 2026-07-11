@@ -7,6 +7,11 @@ metadata:
   category: repository-analysis
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for: []
+  support_for:
+    - token-compression
+  conflicts_with: []
 ---
 
 # Repository Navigation

@@ -7,6 +7,23 @@ metadata:
   category: language-quality
   stack: python
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - python-cleanup
+  support_for:
+    - fastapi-feature
+    - database-issue
+    - refactor
+    - structured-output
+    - rag-pipeline
+    - ai-evaluation
+    - model-serving
+    - mcp-development
+    - multi-agent
+    - fine-tuning
+  conflicts_with:
+    - testing-and-debugging
+    - fastapi-backend
 ---
 
 # Python Quality

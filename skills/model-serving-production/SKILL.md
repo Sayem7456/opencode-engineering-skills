@@ -7,6 +7,11 @@ metadata:
   category: ai-engineering
   stack: model-serving
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - model-serving
+  support_for: []
+  conflicts_with: []
 ---
 
 # Model Serving Production

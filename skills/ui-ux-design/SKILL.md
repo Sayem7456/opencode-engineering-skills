@@ -8,6 +8,12 @@ metadata:
   category: design
   stack: ui-ux
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - ui-redesign
+  support_for: []
+  conflicts_with:
+    - nextjs-frontend
 ---
 
 # UI/UX Design

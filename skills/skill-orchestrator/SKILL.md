@@ -7,6 +7,10 @@ metadata:
   category: meta
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for: []
+  support_for: []
+  conflicts_with: []
 ---
 
 # Skill Orchestrator
@@ -191,6 +195,8 @@ Skill plan:
 - Verbosity: [concise / standard / detailed]
 - Verification depth: [none / focused / module / full]
 ```
+
+If the user asks for skill selection without a specific task, produce a standalone skill plan using the routing tables above.
 
 ## Completion Criteria
 

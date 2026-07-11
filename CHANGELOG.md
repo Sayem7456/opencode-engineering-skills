@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.6.0 (2026-07-11)
+
+### Removed
+
+- `commands/choose-skills.md` — removed; redundant with `skill-orchestrator` skill plan output at task start
+
+### Added
+
+- Example prompts for all 14 commands in README Command Usage Guide (lifecycle-ordered, using `@` file references)
+- Explicit standalone skill selection note to `skill-orchestrator` SKILL.md
+
+### Changed
+
+- Standardised `$ARGUMENTS` placement to end of all command files
+- Deduplicated overlap control blocks (10-rule → 3-rule + single-line skill selection) across 8 commands
+- Converted output format from code blocks to markdown headings in `smart-fix.md`, `smart-review.md`
+- Generalised `discover.md` to cover features and services (not only repositories); added `repo_map`/`prompt_budget` tool fallback; merged redundant Improvement Opportunities section
+- `README.md` — updated `/discover` description and tools column; updated command count (15→14); removed repository tree entry for `choose-skills.md`
+- `scripts/install-opencode.sh` — tools now install as symlinks (were `cp`), matching skills/commands/docs pattern
+- `scripts/install-pack.sh` — ai-engineer pack updated with 6 missing skills; removed dead `PLANNED_SKILLS` code
+- `scripts/validate-skills.sh` — grep patterns changed from `\s` to `[[:space:]]` for BSD/macOS portability
+- `docs/advanced-roadmap.md` — updated with full version history (1.2.0–1.6.0), revised planned enhancements, new contribution ideas
+
 ## 1.5.0 (2026-07-10)
 
 ### Added

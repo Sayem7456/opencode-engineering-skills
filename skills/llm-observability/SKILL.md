@@ -7,6 +7,12 @@ metadata:
   category: ai-engineering
   stack: llm-observability
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - llm-observability
+  support_for: []
+  conflicts_with:
+    - ai-evaluation
 ---
 
 # LLM Observability

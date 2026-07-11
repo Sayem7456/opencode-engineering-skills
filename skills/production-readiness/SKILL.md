@@ -8,6 +8,13 @@ metadata:
   category: production-readiness
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - production-release
+  support_for:
+    - refactor
+  conflicts_with:
+    - security-review
 ---
 
 # Production Readiness

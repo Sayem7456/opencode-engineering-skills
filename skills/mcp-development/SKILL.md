@@ -7,6 +7,11 @@ metadata:
   category: ai-engineering
   stack: mcp
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - mcp-development
+  support_for: []
+  conflicts_with: []
 ---
 
 # MCP Development

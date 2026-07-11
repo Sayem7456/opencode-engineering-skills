@@ -8,6 +8,14 @@ metadata:
   category: frontend
   stack: nextjs
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - nextjs-feature
+  support_for:
+    - bug-fix
+    - code-review
+  conflicts_with:
+    - ui-ux-design
 ---
 
 # Next.js Frontend

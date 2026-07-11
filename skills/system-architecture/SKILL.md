@@ -7,6 +7,12 @@ metadata:
   category: architecture
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - system-architecture
+  support_for: []
+  conflicts_with:
+    - ai-system-architecture
 ---
 
 # System Architecture

@@ -7,6 +7,13 @@ metadata:
   category: ai-engineering
   stack: prompt-engineering
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - prompt-engineering
+  support_for:
+    - structured-output
+  conflicts_with:
+    - structured-output-reliability
 ---
 
 # Prompt Engineering

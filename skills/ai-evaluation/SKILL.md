@@ -7,6 +7,13 @@ metadata:
   category: ai-engineering
   stack: ai-evaluation
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - ai-evaluation
+  support_for: []
+  conflicts_with:
+    - llm-observability
+    - rag-quality-review
 ---
 
 # AI Evaluation

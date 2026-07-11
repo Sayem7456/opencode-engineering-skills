@@ -17,6 +17,33 @@ The following skill pairs share overlapping content:
 
 Loading both skills in a pair simultaneously duplicates instructions and consumes context without new information.
 
+## Orchestration Metadata
+
+Every skill now includes an `orchestration` block in its YAML frontmatter with three fields:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `lead_for` | list | Task types this skill can lead (e.g. `bug-fix`, `code-review`) |
+| `support_for` | list | Task types where this skill adds value as a supporting skill |
+| `conflicts_with` | list | Skills with significant overlap — avoid activating both simultaneously |
+
+The skill-orchestrator uses this metadata to build a skill plan at task start, selecting the correct lead, filtering applicable supports, and suppressing conflicting pairs.
+
+Example:
+```yaml
+orchestration:
+  lead_for:
+    - python-cleanup
+  support_for:
+    - fastapi-feature
+    - bug-fix
+  conflicts_with:
+    - testing-and-debugging
+    - fastapi-backend
+```
+
+See `ready-api.md` for the full skill-to-skill routing table and orchestration guide.
+
 ## Design Principles
 
 1. **Every task has one lead skill.** The lead defines the approach, output format, and depth. Supporting skills fill domain-specific gaps.

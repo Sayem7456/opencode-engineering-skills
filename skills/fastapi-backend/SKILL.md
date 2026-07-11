@@ -8,6 +8,18 @@ metadata:
   category: backend
   stack: fastapi
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - fastapi-feature
+  support_for:
+    - bug-fix
+    - database-issue
+    - refactor
+    - code-review
+    - security-review
+  conflicts_with:
+    - sqlalchemy-postgres
+    - python-quality
 ---
 
 # FastAPI Backend

@@ -7,6 +7,11 @@ metadata:
   category: ai-engineering
   stack: fine-tuning
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - fine-tuning
+  support_for: []
+  conflicts_with: []
 ---
 
 # Fine-Tuning

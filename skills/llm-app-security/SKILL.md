@@ -7,6 +7,12 @@ metadata:
   category: ai-security
   stack: llm-applications
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - llm-security
+  support_for: []
+  conflicts_with:
+    - prompt-injection-defense
 ---
 
 # LLM Application Security

@@ -199,6 +199,25 @@ for directory in "$SKILLS_DIR"/*; do
         failed=1
     fi
 
+    # orchestration
+    if ! echo "$frontmatter" | grep -q '^orchestration:'; then
+        echo "  ERROR: orchestration is missing from frontmatter"
+        failed=1
+    else
+        if ! echo "$frontmatter" | grep -qE '^[[:space:]]+lead_for:'; then
+            echo "  ERROR: orchestration.lead_for is missing"
+            failed=1
+        fi
+        if ! echo "$frontmatter" | grep -qE '^[[:space:]]+support_for:'; then
+            echo "  ERROR: orchestration.support_for is missing"
+            failed=1
+        fi
+        if ! echo "$frontmatter" | grep -qE '^[[:space:]]+conflicts_with:'; then
+            echo "  ERROR: orchestration.conflicts_with is missing"
+            failed=1
+        fi
+    fi
+
     # body is not empty
     body="$(extract_body "$skill_file" | tr -d '[:space:]')"
 

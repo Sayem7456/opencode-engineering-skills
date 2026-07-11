@@ -7,6 +7,12 @@ metadata:
   category: context-optimization
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - token-compression
+  support_for: []
+  conflicts_with:
+    - context-engineering
 ---
 
 # Token Saver

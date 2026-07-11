@@ -7,6 +7,12 @@ metadata:
   category: ai-engineering
   stack: llm-structured-output
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - structured-output
+  support_for: []
+  conflicts_with:
+    - prompt-engineering
 ---
 
 # Structured Output Reliability

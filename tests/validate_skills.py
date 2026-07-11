@@ -59,6 +59,7 @@ REQUIRED_SKILL_FIELDS = {
     "license",
     "compatibility",
     "metadata",
+    "orchestration",
 }
 
 REQUIRED_METADATA_FIELDS = {
@@ -392,6 +393,28 @@ def validate_skill_directory(
                     "semantic versioning.",
                 )
             )
+
+    orchestration = frontmatter.get("orchestration")
+
+    if not isinstance(orchestration, dict):
+        issues.append(
+            ValidationIssue(
+                "ERROR",
+                skill_file,
+                "'orchestration' must be a mapping.",
+            )
+        )
+    else:
+        for field in ("lead_for", "support_for", "conflicts_with"):
+            value = orchestration.get(field)
+            if not isinstance(value, list):
+                issues.append(
+                    ValidationIssue(
+                        "ERROR",
+                        skill_file,
+                        f"orchestration.{field} must be a list.",
+                    )
+                )
 
     if not body:
         issues.append(

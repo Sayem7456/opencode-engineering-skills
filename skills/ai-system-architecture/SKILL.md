@@ -7,6 +7,12 @@ metadata:
   category: ai-engineering
   stack: ai-architecture
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - ai-system-architecture
+  support_for: []
+  conflicts_with:
+    - system-architecture
 ---
 
 # AI System Architecture

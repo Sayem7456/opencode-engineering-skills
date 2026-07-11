@@ -8,6 +8,18 @@ metadata:
   category: debugging
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - bug-fix
+  support_for:
+    - python-cleanup
+    - database-issue
+    - refactor
+    - fastapi-feature
+    - nextjs-feature
+    - model-serving
+  conflicts_with:
+    - python-quality
 ---
 
 # Testing and Debugging

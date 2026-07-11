@@ -7,6 +7,18 @@ metadata:
   category: security
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - security-review
+  support_for:
+    - fastapi-feature
+    - nextjs-feature
+    - structured-output
+    - rag-pipeline
+    - injection-defense
+  conflicts_with:
+    - code-review
+    - production-readiness
 ---
 
 # Security Review

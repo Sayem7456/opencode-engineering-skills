@@ -7,6 +7,11 @@ metadata:
   category: ai-engineering
   stack: ai-cost-optimization
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - cost-optimization
+  support_for: []
+  conflicts_with: []
 ---
 
 # AI Cost Optimization

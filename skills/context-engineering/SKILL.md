@@ -7,6 +7,13 @@ metadata:
   category: context-management
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - token-compression
+    - session-handoff
+  support_for: []
+  conflicts_with:
+    - token-saver
 ---
 
 # Context Engineering

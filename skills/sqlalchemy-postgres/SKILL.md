@@ -8,6 +8,16 @@ metadata:
   category: database
   stack: sqlalchemy-postgres
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - database-issue
+    - alembic-migration
+  support_for:
+    - fastapi-feature
+    - production-release
+    - bug-fix
+  conflicts_with:
+    - fastapi-backend
 ---
 
 # SQLAlchemy and PostgreSQL

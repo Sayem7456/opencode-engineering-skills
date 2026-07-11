@@ -8,6 +8,13 @@ metadata:
   category: code-quality
   stack: cross-stack
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - code-review
+    - refactor
+  support_for: []
+  conflicts_with:
+    - security-review
 ---
 
 # Code Review

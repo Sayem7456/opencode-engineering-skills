@@ -7,6 +7,11 @@ metadata:
   category: ai-engineering
   stack: multi-agent
   version: "1.0.0"
+orchestration:
+  lead_for:
+    - multi-agent
+  support_for: []
+  conflicts_with: []
 ---
 
 # Multi-Agent Orchestration
