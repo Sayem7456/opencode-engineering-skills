@@ -123,7 +123,15 @@ if [[ -d "$TOOLS_SOURCE_DIR" ]]; then
         tool_name="${tool_filename%.ts}"
         target="$TOOLS_TARGET_DIR/$tool_filename"
 
-        cp "$tool_file" "$target"
+        if [[ -L "$target" ]]; then
+            echo "Replacing existing symlink: $tool_name"
+            rm "$target"
+        elif [[ -e "$target" ]]; then
+            echo "Warning: $tool_name already exists and is not a symlink. Skipping."
+            continue
+        fi
+
+        ln -s "$tool_file" "$target"
 
         echo "Installed tool: $tool_name"
         installed_tools=$((installed_tools + 1))

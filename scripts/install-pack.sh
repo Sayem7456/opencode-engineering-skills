@@ -6,8 +6,6 @@ REPO_SOURCE="Sayem7456/opencode-engineering-skills"
 AGENT="opencode"
 INSTALL_SCOPE="--global"
 
-PLANNED_SKILLS=""
-
 # --------------------------------------------------
 # Usage
 # --------------------------------------------------
@@ -53,7 +51,7 @@ resolve_pack() {
             echo "production-readiness security-review sqlalchemy-postgres testing-and-debugging token-saver context-engineering"
             ;;
         ai-engineer)
-            echo "python-quality testing-and-debugging token-saver context-engineering structured-output-reliability llm-app-security prompt-injection-defense rag-quality-review ai-evaluation ai-cost-optimization model-serving-production"
+            echo "python-quality testing-and-debugging token-saver context-engineering structured-output-reliability llm-app-security prompt-injection-defense rag-quality-review ai-evaluation ai-cost-optimization model-serving-production mcp-development multi-agent-orchestration fine-tuning llm-observability prompt-engineering ai-system-architecture"
             ;;
         fullstack)
             echo "python-quality fastapi-backend sqlalchemy-postgres nextjs-frontend ui-ux-design testing-and-debugging security-review code-review production-readiness token-saver context-engineering repository-navigation"
@@ -96,19 +94,6 @@ if [[ -z "$SKILLS" ]]; then
     echo "Error: unknown pack '$PACK_NAME'" >&2
     echo "Valid packs: backend frontend review production ai-engineer fullstack" >&2
     exit 1
-fi
-
-# --------------------------------------------------
-# Handle ai-engineer planned skills notice
-# --------------------------------------------------
-
-if [[ "$PACK_NAME" == "ai-engineer" ]]; then
-    echo "Note: ai-engineer pack includes only currently available skills."
-    echo "  The following skills are planned and not yet available:"
-    for planned in $PLANNED_SKILLS; do
-        echo "    - $planned"
-    done
-    echo ""
 fi
 
 # --------------------------------------------------

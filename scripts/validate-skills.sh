@@ -344,7 +344,7 @@ if [[ -d "$TOOLS_DIR" ]]; then
         fi
 
         # Check for required properties
-        if ! grep -qE '^\s*description\s*:' "$tool_file"; then
+        if ! grep -qE '^[[:space:]]*description[[:space:]]*:' "$tool_file"; then
             echo "  ERROR: missing description property"
             failed=1
         fi
@@ -354,7 +354,7 @@ if [[ -d "$TOOLS_DIR" ]]; then
             failed=1
         fi
 
-        if ! grep -qE '^\s*(async\s+)?execute\s*[:(]' "$tool_file"; then
+        if ! grep -qE '^[[:space:]]*(async[[:space:]]+)?execute[[:space:]]*[:(]' "$tool_file"; then
             echo "  ERROR: missing execute property"
             failed=1
         fi
