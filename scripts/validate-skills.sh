@@ -35,6 +35,22 @@ extract_body() {
 }
 
 # --------------------------------------------------
+# Validate that a YAML list follows a given frontmatter key
+# --------------------------------------------------
+check_yaml_list() {
+    local key="$1"
+    echo "$frontmatter" \
+    | awk -v k="$key" '
+        $0 ~ "^[[:space:]]*" k ":" {
+            if ($0 ~ /\[.*\]/) { print "OK"; exit }
+            found = 1; next
+        }
+        found && /^[[:space:]]+- / { print "OK"; exit }
+        found && /^[[:space:]]*[^[:space:]]/ { print "NOT_LIST"; exit }
+    '
+}
+
+# --------------------------------------------------
 # Validate skills
 # --------------------------------------------------
 
@@ -68,7 +84,7 @@ for directory in "$SKILLS_DIR"/*; do
     declared_name="$(
         echo "$frontmatter" \
         | awk -F':[[:space:]]*' '
-            $1 == "name" {
+            $1 ~ /^name[[:space:]]*$/ {
                 gsub(/^["'\'' ]+|["'\'' ]+$/, "", $2)
                 gsub(/[[:space:]]+$/, "", $2)
                 print $2
@@ -100,8 +116,8 @@ for directory in "$SKILLS_DIR"/*; do
     license_value="$(
         echo "$frontmatter" \
         | awk -F':[[:space:]]*' '
-            $1 == "license" {
-                gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2)
+            $1 ~ /^license[[:space:]]*$/ {
+                gsub(/^["'\'' ]+|["'\'' ]+$/, "", $2)
                 print $2
                 exit
             }
@@ -120,8 +136,8 @@ for directory in "$SKILLS_DIR"/*; do
     compat_value="$(
         echo "$frontmatter" \
         | awk -F':[[:space:]]*' '
-            $1 == "compatibility" {
-                gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2)
+            $1 ~ /^compatibility[[:space:]]*$/ {
+                gsub(/^["'\'' ]+|["'\'' ]+$/, "", $2)
                 print $2
                 exit
             }
@@ -207,13 +223,22 @@ for directory in "$SKILLS_DIR"/*; do
         if ! echo "$frontmatter" | grep -qE '^[[:space:]]+lead_for:'; then
             echo "  ERROR: orchestration.lead_for is missing"
             failed=1
+        elif [[ "$(check_yaml_list "lead_for")" != "OK" ]]; then
+            echo "  ERROR: orchestration.lead_for must be a YAML list"
+            failed=1
         fi
         if ! echo "$frontmatter" | grep -qE '^[[:space:]]+support_for:'; then
             echo "  ERROR: orchestration.support_for is missing"
             failed=1
+        elif [[ "$(check_yaml_list "support_for")" != "OK" ]]; then
+            echo "  ERROR: orchestration.support_for must be a YAML list"
+            failed=1
         fi
         if ! echo "$frontmatter" | grep -qE '^[[:space:]]+conflicts_with:'; then
             echo "  ERROR: orchestration.conflicts_with is missing"
+            failed=1
+        elif [[ "$(check_yaml_list "conflicts_with")" != "OK" ]]; then
+            echo "  ERROR: orchestration.conflicts_with must be a YAML list"
             failed=1
         fi
     fi
