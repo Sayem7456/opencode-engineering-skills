@@ -9,8 +9,6 @@ Use the `diff_summarizer` custom tool to summarize the diff of changes, classify
 If the custom tool is unavailable, use the Python script directly from the cloned repository:
 - python tools/diff_summarizer.py [--file <path> or --stdin]
 
-$ARGUMENTS
-
 ## Skill Selection
 
 Lead skill: `testing-and-debugging`.
@@ -48,32 +46,32 @@ Add `production-readiness` as guardrail only when the fix changes:
 
 ## Output Format
 
-```
-Skill plan:
+**Skill plan:**
 - Lead skill: testing-and-debugging
 - Supporting skills: [names or none]
 - Guardrail skills: [names or none]
 - Skills intentionally not used: [names]
 - Verbosity: concise
 
-Root cause:
+**Root cause:**
 [What caused the defect, with evidence.]
 
-Fix:
+**Fix:**
 [Smallest safe change applied.]
 
-Files changed:
+**Files changed:**
 [Path — summary of change.]
 
-Regression test:
+**Regression test:**
 [Test file and what it covers.]
 
-Verification:
+**Verification:**
 [Commands run and their results.]
 
-Skipped broader checks:
+**Skipped broader checks:**
 [What was intentionally skipped and why.]
 
-Remaining risk:
+**Remaining risk:**
 [What could still go wrong.]
-```
+
+$ARGUMENTS

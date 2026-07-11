@@ -4,8 +4,6 @@ description: Choose the best lead skill and supporting skills for a task while a
 
 Analyze the task and produce a skill plan. Do not modify files. Do not activate all skills by default.
 
-$ARGUMENTS
-
 Follow these rules:
 
 1. Select exactly one lead skill.
@@ -26,10 +24,9 @@ Follow these rules:
    - `broad` — full test file plus lint, typecheck, and build
    - `production-grade` — all tests, lint, typecheck, build, and migration checks
 
-Output format:
+## Output Format
 
-```
-Skill plan:
+**Skill plan:**
 - Task type:
 - Lead skill:
 - Supporting skills:
@@ -39,4 +36,5 @@ Skill plan:
 - Verbosity:
 - Verification depth:
 - Suggested next prompt:
-```
+
+$ARGUMENTS

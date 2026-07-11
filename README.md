@@ -114,7 +114,7 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `/plan`              | Create a compact implementation plan before editing code                       | `repo_map`, `prompt_budget` |
 | `/architecture`      | Produce an architecture design with context, components, data flow, trade-offs, assumptions, and an implementation sequence | `repo_map`, `prompt_budget` |
 | `/safe-apply`        | Apply a planned change safely with diff inspection and verification            | `diff_summarizer` |
-| `/discover`          | Discover capability gaps, missing features, or improvement opportunities in any repository | `repo_map` |
+| `/discover`          | Discover capability gaps, missing features, or improvement opportunities in any repository, project, feature, or service | `repo_map`, `prompt_budget` |
 
 ## Skill Packs
 
@@ -483,7 +483,85 @@ Pick the command that matches what you want to do.
 | Find wasted context | `/context-audit` | Session feels wasteful — identify what to drop or load |
 | Hand off to new session | `/handoff-summary` | Continuing elsewhere — preserve decisions and state |
 
-If unsure which lead skills to use, start with `/choose-skills` to get a plan before the task.
+### Example Prompts
+
+**Choose skills for a task:**
+```
+/choose-skills I need to build a GraphQL API with FastAPI, add tests, and deploy — which skills should I load?
+```
+
+**Discover gaps or improvement opportunities:**
+```
+/discover Find gaps across the whole @project
+/discover Analyze the search feature in @app/services/search.py — find gaps in relevance ranking, filtering UX, and result caching
+/discover Review the notification service in @app/services/notifications/ — find gaps in delivery reliability, channel support, and templating
+/discover Look at @components/ImageGallery.tsx — identify missing states (loading, error, empty), accessibility issues, and performance improvements
+```
+
+**Plan before building:**
+```
+/plan Add pagination to the user list — review @app/routes/users.py, @app/services/user_service.py, @app/templates/user_list.html
+```
+
+**Design architecture:**
+```
+/architecture Design an event-driven notification system for email, Slack, and in-app alerts with idempotent delivery and retries
+```
+
+**Build a new feature:**
+```
+/implement Add a "Forgot Password" flow — follow patterns in @app/routes/auth.py and @app/services/auth_service.py
+```
+
+**Refactor existing code:**
+```
+/refactor Simplify @app/services/payment.py — extract separate providers for Stripe and PayPal
+```
+
+**Apply a planned change safely:**
+```
+/safe-apply Apply the changes from @/tmp/plan.md and verify with tests
+```
+
+**Review specific code (no changes):**
+```
+/review Check @app/routes/api/v1/orders.py for security vulnerabilities, auth gaps, and error handling
+```
+
+**Smart review (broad scope):**
+```
+/smart-review Review the full checkout flow — from cart addition through payment confirmation
+```
+
+**Investigate a bug (unknown root cause):**
+```
+/debug The checkout endpoint throws 500 for guest users — investigate @app/routes/checkout.py
+```
+
+**Fix a confirmed defect:**
+```
+/fix Lockout after 5 failed login attempts is not enforced — fix @app/routes/auth.py and add tests in @tests/test_auth.py
+```
+
+**Smart fix (vague bug report):**
+```
+/smart-fix Users report the dashboard is slow — investigate and fix performance
+```
+
+**Compress a long session:**
+```
+/compress-context The session has covered auth, checkout, and email logic — produce a compressed working summary
+```
+
+**Audit context waste:**
+```
+/context-audit Check whether we are holding unnecessary files from the earlier debugging task
+```
+
+**Hand off to a new session:**
+```
+/handoff-summary I am continuing in a new session — preserve decisions, pending tasks, and verification state
+```
 
 # Best Practices
 

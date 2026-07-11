@@ -9,8 +9,6 @@ Use the `diff_summarizer` custom tool to summarize git diffs with per-file risk 
 If the custom tool is unavailable, use the Python script directly from the cloned repository:
 - python tools/diff_summarizer.py [--file <path> or --stdin]
 
-$ARGUMENTS
-
 ## Review Type Determination
 
 Analyze the target and determine the review type:
@@ -51,13 +49,12 @@ Do not report style-only issues. Keep output compact.
 
 ## Output Format
 
-```
-Review mode: [general / security / production / database / frontend / api]
-Lead skill: [name]
-Supporting skills: [names or none]
-Excluded skills: [names]
+**Review mode:** [general / security / production / database / frontend / api]
+**Lead skill:** [name]
+**Supporting skills:** [names or none]
+**Excluded skills:** [names]
 
-Findings:
+**Findings:**
 - [Severity] Title
   Location:
   Evidence:
@@ -67,9 +64,10 @@ Findings:
 - [Severity] Title
   ...
 
-Not reviewed:
+**Not reviewed:**
 [Areas intentionally excluded and why.]
 
-Verification:
+**Verification:**
 [Commands or checks to confirm fixes.]
-```
+
+$ARGUMENTS

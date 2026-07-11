@@ -14,23 +14,11 @@ Do not summarize away security, schema, migration, or API contract details.
 
 ## Overlap control
 
-1. Start with `skill-orchestrator` when task scope is broad or ambiguous.
-2. Select exactly one lead skill (`code-review`, `security-review`, or `production-readiness`).
-3. Use supporting skills only for specialized checks.
-4. Do not activate `security-review` unless the task touches security-sensitive areas.
-5. Do not activate `production-readiness` unless the task affects deployment, config, migrations, reliability, or release.
-6. Do not activate `ui-ux-design` unless user-facing UI/UX is involved.
-7. Do not activate `sqlalchemy-postgres` unless database, session, migration, or query code is involved.
-8. Do not repeat generic advice from multiple skills.
-9. Keep output proportional to task risk.
-10. Prefer concise findings over broad checklists.
+Keep output proportional to task risk. Prefer concise findings over broad checklists.
+Do not activate skills unrelated to the task scope.
+Use supporting skills only when the lead skill does not cover the area.
 
-Skill selection:
-- Lead:
-- Support:
-- Guardrail:
-- Excluded:
-- Reason:
+Skill selection — Lead: Support: Guardrail: Excluded: Reason:
 
 Inspect related files, callers, tests, schemas, models, migrations, and API consumers before reporting findings.
 
