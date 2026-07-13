@@ -112,7 +112,7 @@ The `token-saver`, `context-engineering`, and `repository-navigation` skills tea
 | `/handoff-summary`   | Create a handoff summary for continuing in a new OpenCode session              | `context_compressor`, `prompt_budget` |
 | `/plan`              | Create a compact implementation plan before editing code                       | `repo_map`, `prompt_budget` |
 | `/architecture`      | Produce an architecture design with context, components, data flow, trade-offs, assumptions, and an implementation sequence | `repo_map`, `prompt_budget` |
-| `/safe-apply`        | Apply a planned change safely with diff inspection and verification            | `diff_summarizer` |
+| `/safe-apply`        | Apply planned changes or review findings safely with diff inspection and per-item verification | `diff_summarizer` |
 | `/discover`          | Discover capability gaps, missing features, or improvement opportunities in any repository, project, feature, or service | `repo_map`, `prompt_budget` |
 
 ## Skill Packs
@@ -474,7 +474,7 @@ Pick the command that matches what you want to do.
 | Vague bug report | `/smart-fix` | Bug is unclear — needs skill orchestration to classify first |
 | Know what to review | `/review` | You know the files — review without modifying |
 | Vague review scope | `/smart-review` | Scope is broad — needs skill orchestration to classify first |
-| Apply a planned change | `/safe-apply` | After `/plan` — applies with diff inspection and verification |
+| Apply planned changes or review findings | `/safe-apply` | After `/plan` or `/review`/`/smart-review` — applies with diff inspection and per-item verification |
 | Build a new feature | `/implement` | Follow existing project conventions |
 | Restructure code | `/refactor` | Preserve behavior, improve structure |
 | Compress long session | `/compress-context` | Session is long — produce a working summary |
@@ -511,9 +511,10 @@ Pick the command that matches what you want to do.
 /refactor Simplify @app/services/payment.py — extract separate providers for Stripe and PayPal
 ```
 
-**Apply a planned change safely:**
+**Apply a planned change or review findings safely:**
 ```
 /safe-apply Apply the changes from @/tmp/plan.md and verify with tests
+/safe-apply Apply all findings from the review above, one by one, with verification
 ```
 
 **Review specific code (no changes):**
