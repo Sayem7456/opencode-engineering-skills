@@ -1,11 +1,14 @@
 ---
-description: Apply findings or recommended changes from a review safely with per-finding verification
+description: Apply findings or planned changes safely with per-item verification, priority ordering, and dynamic skill selection
 ---
 
-Apply findings or planned changes safely. When consuming review output, apply each finding's
-recommended fix and regression test independently using `testing-and-debugging` and stack-specific skills.
+Use skill-orchestrator skill to classify each item. Determine the lead skill per item, supporting skills, guardrails, and verbosity before applying.
 
-Use the `diff_summarizer` custom tool to inspect the diff before applying, classify per-file risk, and detect affected symbols.
+Apply findings or planned changes safely. When consuming review output, apply each finding's
+recommended fix and regression test independently.
+
+Use the `diff_summarizer` custom tool after each change to inspect the resulting diff, classify
+per-file risk, and detect affected symbols.
 
 If the custom tool is unavailable, use the Python script directly from the cloned repository:
 - python tools/diff_summarizer.py [--file <path> or --stdin]
@@ -17,21 +20,39 @@ Do not summarize away security, schema, migration, or API contract details.
 
 This command accepts either:
 - **Review findings** — output from `/review` or `/smart-review` containing items each with a Severity, File, Problem, Impact, Fix, and Test recommendation
-- **Planned changes** — a standalone description of changes to make
+- **Planned changes** — a standalone description of changes to make (scope, files, risks, tests, validation commands, rollback)
 
-When findings are provided, treat each finding as a work item. Do not batch them into one change.
+When findings are provided, treat each finding as a work item. Sort by severity (Critical → High → Medium → Low) and apply in that order.
 
-## Per-finding workflow
+## Skill selection (per item)
 
-For each finding or change:
+Use skill-orchestrator to classify the item and determine lead, supporting, and guardrail skills.
 
-1. Locate the affected file and understand the context
-2. Apply the smallest safe fix scoped to this item
-3. Add or update the recommended regression test
-4. Run focused verification for this item
-5. Report status before moving to the next item
+When skill-orchestrator is unavailable, select the lead skill based on the item's type:
 
-If a finding's fix introduces a new issue, stop and report before proceeding.
+- security issue → `security-review`
+- database/model/migration → `sqlalchemy-postgres`
+- API/schema/contract → `fastapi-backend`
+- UI/frontend → `nextjs-frontend`
+- general defect → `testing-and-debugging`
+- production/deployment risk → `production-readiness`
+
+Supporting skills and guardrails: add only when the lead skill does not cover a specific area in the item.
+Excluded: Reason: form for skills intentionally not used.
+
+## Per-item workflow
+
+For each item (in priority order):
+
+1. Use skill-orchestrator to classify the item and determine lead skill, supporting skills, guardrails, and verbosity
+2. Locate the affected file and understand the context
+3. Apply the smallest safe fix scoped to this item
+4. Run `diff_summarizer` on the resulting diff to inspect what changed
+5. Add or update the recommended regression test
+6. Run focused verification for this item
+7. Report status before moving to the next item
+
+If a fix introduces a new issue, stop and report before proceeding.
 
 ## Overlap control
 
@@ -39,12 +60,12 @@ Keep output proportional to task risk. Prefer concise findings over broad checkl
 Do not activate skills unrelated to the task scope.
 Use supporting skills only when the lead skill does not cover the area.
 
-Skill selection — Lead: `testing-and-debugging`. Support: Guardrail: Excluded: Reason:
-
 Requirements:
 
-- inspect the diff before applying
+- inspect the diff after each change
 - consume review findings (severity, location, fix, test recommendation)
+- sort findings by severity before applying
+- select the lead skill per item based on issue type
 - apply each finding independently
 - add or update focused tests per finding
 - run focused verification per finding
@@ -65,15 +86,18 @@ If verification fails:
 - stop and report the failure
 - do not apply additional speculative fixes
 - identify the root cause before making further changes
+- consider rollback steps from the original plan if this came from `/plan`
 
 ## Output format
 
 **Input source:** [review findings / planned changes]
 
-**Items resolved:**
+**Items resolved (in order applied):**
 
 - [Severity] Title — File:
+  Skill plan: Lead: Support: Guardrail: Excluded:
   Fix applied:
+  Diff inspected:
   Test added:
   Verification:
   Status: [Pass / Fail]
@@ -91,3 +115,5 @@ If verification fails:
 **Status:**
 
 [Pass or Fail with details.]
+
+$ARGUMENTS

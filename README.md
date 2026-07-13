@@ -49,7 +49,7 @@ The five new slash commands invoke these skills directly:
 * `/context-audit` — audit the current session for wasted context.
 * `/handoff-summary` — prepare a handoff for a new session.
 * `/plan` — create a compact implementation plan before editing.
-* `/safe-apply` — apply a planned change with verification checks.
+* `/safe-apply` — apply planned changes or review findings with verification checks.
 
 ### Measured Savings
 
