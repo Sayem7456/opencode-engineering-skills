@@ -513,9 +513,9 @@ Pick the command that matches what you want to do.
 
 **Apply a planned change or review findings safely:**
 ```
-/safe-apply Apply the changes from @/tmp/plan.md and verify with tests
+/safe-apply Apply the plan above and verify with tests
 /safe-apply Apply all findings from the review above, one by one, with verification
-/safe-apply Implement the high-priority discovery recommendations from @/tmp/discovery.md
+/safe-apply Implement the high-priority discovery recommendations above
 ```
 
 **Review specific code (no changes):**
