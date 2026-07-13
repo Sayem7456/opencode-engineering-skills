@@ -474,7 +474,7 @@ Pick the command that matches what you want to do.
 | Vague bug report | `/smart-fix` | Bug is unclear — needs skill orchestration to classify first |
 | Know what to review | `/review` | You know the files — review without modifying |
 | Vague review scope | `/smart-review` | Scope is broad — needs skill orchestration to classify first |
-| Apply planned changes or review findings | `/safe-apply` | After `/plan` or `/review`/`/smart-review` — applies with diff inspection and per-item verification |
+| Apply planned changes, review findings, or discovery recommendations | `/safe-apply` | After `/plan`, `/review`/`/smart-review`, or `/discover` — applies with diff inspection and per-item verification |
 | Build a new feature | `/implement` | Follow existing project conventions |
 | Restructure code | `/refactor` | Preserve behavior, improve structure |
 | Compress long session | `/compress-context` | Session is long — produce a working summary |
@@ -515,6 +515,7 @@ Pick the command that matches what you want to do.
 ```
 /safe-apply Apply the changes from @/tmp/plan.md and verify with tests
 /safe-apply Apply all findings from the review above, one by one, with verification
+/safe-apply Implement the high-priority discovery recommendations from @/tmp/discovery.md
 ```
 
 **Review specific code (no changes):**

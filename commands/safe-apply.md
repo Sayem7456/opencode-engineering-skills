@@ -18,11 +18,12 @@ Do not summarize away security, schema, migration, or API contract details.
 
 ## Input
 
-This command accepts either:
+This command accepts:
 - **Review findings** — output from `/review` or `/smart-review` containing items each with a Severity, File, Problem, Impact, Fix, and Test recommendation
+- **Discovery recommendations** — output from `/discover` containing items each with a Name, Type, Priority, and Distinct Value
 - **Planned changes** — a standalone description of changes to make (scope, files, risks, tests, validation commands, rollback)
 
-When findings are provided, treat each finding as a work item. Sort by severity (Critical → High → Medium → Low) and apply in that order.
+When findings or recommendations are provided, treat each as a work item. Sort by priority (Critical → High → Medium → Low / Experimental) and apply in that order.
 
 ## Skill selection (per item)
 
@@ -63,7 +64,7 @@ Use supporting skills only when the lead skill does not cover the area.
 Requirements:
 
 - inspect the diff after each change
-- consume review findings (severity, location, fix, test recommendation)
+- consume review findings or discovery recommendations
 - sort findings by severity before applying
 - select the lead skill per item based on issue type
 - apply each finding independently
@@ -90,11 +91,11 @@ If verification fails:
 
 ## Output format
 
-**Input source:** [review findings / planned changes]
+**Input source:** [review findings / discovery recommendations / planned changes]
 
 **Items resolved (in order applied):**
 
-- [Severity] Title — File:
+- [Severity/Priority] Title — File:
   Skill plan: Lead: Support: Guardrail: Excluded:
   Fix applied:
   Diff inspected:
